@@ -7,19 +7,26 @@
   },
   "type": "module",
   "devDependencies": {
-    "@types/node": "^18.11.18",
+    "@types/node": "^18.16.19",
+    "@typescript-eslint/eslint-plugin": "^5.61.0",
     "esbuild": "^0.14.54",
-    "postcss": "^8.4.21",
-    "solid-start-node": "^0.2.19",
-    "typescript": "^4.9.4",
-    "vite": "^4.1.4"
+    "eslint": "^8.44.0",
+    "eslint-config-standard-with-typescript": "^36.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.7.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-solid": "^0.12.1",
+    "postcss": "^8.4.25",
+    "solid-start-node": "^0.2.26",
+    "typescript": "^4.9.5",
+    "vite": "^4.4.2"
   },
   "dependencies": {
-    "@solidjs/meta": "^0.28.2",
+    "@solidjs/meta": "^0.28.5",
     "@solidjs/router": "^0.8.2",
-    "solid-js": "^1.7.2",
+    "solid-js": "^1.7.7",
     "solid-start": "^0.2.26",
-    "undici": "^5.15.1"
+    "undici": "^5.22.1"
   },
   "engines": {
     "node": ">=16.8"
