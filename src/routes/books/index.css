@@ -1,0 +1,17 @@
+.grid{
+    display:grid; 
+    grid-template-areas:"list" "list"
+                        "pagination";
+    height:100vh;
+    width:100vw;
+}     
+
+.list{
+    display:grid;
+    grid-area: list;
+}
+
+.pagination{
+    place-self: center;
+    grid-area: pagination;
+}
