@@ -1,39 +1,36 @@
-import { createResource, Resource, Show } from 'solid-js'
+import { createResource, createSignal, Resource, Show } from 'solid-js'
 import { useParams } from 'solid-start'
 import { ArticleReader } from '~/components/ArticleReader';
 import { ServerRootUrl } from '~/environments';
 import { Article } from '~/models/article.model';
+import { Button } from "@suid/material"
 
-const getArticle = async (): Promise<Article> => {
-    const params = useParams<{ id: string }>()
-    const ID = params.id
-    const response = await fetch(`${ServerRootUrl}/articles/${ID}`);
-    return await response.json() as Article;
-};
+const fetchArticle = async (id: string): Promise<Article> =>
+    (await fetch(`${ServerRootUrl}/articles/${id}`)).json();
 
 // 生成删除指定文章的函数
-const deleteArticleURI = (ID: string) => {
+const deleteArticleURI = (id: string) => {
     return async () => {
-        const response = await fetch(`${ServerRootUrl}/articles/${ID}`, { method: "DELETE" });
-        return await response.json()
+        const response = await fetch(`${ServerRootUrl}/articles/${id}`, { method: "DELETE" });
+        if (response.status !== 204) {
+            throw new Error("删除失败");
+        };
     }
 }
-function showArticle(art: Resource<Article>, id: string) {
-    const deleteArticle = deleteArticleURI(id)
-    return <div>
-        <Show when={!art.loading} fallback={<div>Loading...</div>}>
-            <ArticleReader article={art()} />
-            <button onclick={deleteArticle}>删除</button>
-        </Show>
-    </div>
-}
-
 
 
 export default function id() {
     const params = useParams<{ id: string }>()
-    const ID = params.id
-
-    const [data] = createResource(getArticle)
-    return showArticle(data, ID)
+    const id = params.id
+    const [articleId, setArticleId] = createSignal(id);
+    const [article] = createResource(articleId, fetchArticle);
+    const deleteArticle = deleteArticleURI(id)
+    // article() 必须预先执行，否则后续会处于undefined.
+    article()
+    return <>
+        <Show when={!article.loading && typeof article() !== 'undefined'} fallback={<div>Loading...</div>}>
+            <Button color="error" onclick={deleteArticle}>删除</Button>
+            <ArticleReader article={article()!} />
+        </Show>
+    </>
 }

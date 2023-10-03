@@ -4,6 +4,7 @@ import { Pagination } from "~/components/Pagination";
 import { Article } from "~/models/article.model";
 import "./index.css";
 import { ServerRootUrl } from "~/environments";
+import { List } from "@suid/material";
 
 
 const [page, setPage] = createSignal(1);
@@ -18,11 +19,11 @@ const getArticles = async (): Promise<Article[]> => {
 function list(articles: Resource<Article[]>, refetch: any) {
     return <>
         <div class="grid">
-            <ul class="list">
+            <List>
                 <For each={articles()}>
                     {article => <li><ArticleRow article={article} /></li>}
                 </For>
-            </ul>
+            </List>
             <div class="pagination">
                 <Pagination page={page} setPage={setPage} action={refetch} />
             </div>

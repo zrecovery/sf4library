@@ -13,7 +13,7 @@ type Article = {
 }
 
 const getArticlesByBook = async (): Promise<Article[]> => {
-    const params = useParams<{ author:string,title: string }>()
+    const params = useParams<{ author: string, title: string }>()
     const TITLE = params.title
     const AUTHOR = params.author
     const response = await fetch(`${ServerRootUrl}/books?title=${TITLE}&author=${AUTHOR}`);

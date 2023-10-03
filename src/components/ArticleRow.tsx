@@ -1,5 +1,6 @@
 import { A } from "solid-start";
 import { Article } from "~/models/article.model";
+import { ListItem, ListItemText, ListItemButton } from "@suid/material";
 
 type ArticleRowProps = {
     article: Article;
@@ -7,13 +8,15 @@ type ArticleRowProps = {
 
 export function ArticleRow(props: ArticleRowProps) {
     const { article } = props
-    return <>
-        <A href={`/articles/${String(article.id)}`}>
-            <div>{article.title}</div>
-            <div>{article.serial_name}</div>
-            <div>{article.author}</div>
-        </A>
-    </ >
+    return <ListItem>
+        <ListItemButton >
+            <A href={`/articles/${String(article.id)}`}>
+                <ListItemText>{article.title}</ListItemText>
+                <ListItemText>{article.book}</ListItemText>
+                <ListItemText>{article.author}</ListItemText>
+            </A>
+        </ListItemButton>
+    </ListItem>
 };
 
 export default ArticleRow;

@@ -1,3 +1,4 @@
+import { List, ListItem, ListItemButton } from "@suid/material";
 import { createMemo, createResource, createSignal, For, Resource } from "solid-js";
 import { A } from "solid-start";
 import { Pagination } from "~/components/Pagination";
@@ -6,7 +7,7 @@ import { ServerRootUrl } from "~/environments";
 
 type Book = {
     author: string;
-    serial_name: string;
+    title: string;
 }
 
 const [page, setPage] = createSignal(1)
@@ -20,13 +21,20 @@ const getBooks = async (): Promise<Book[]> => {
 function list(books: Resource<Book[]>, refetch: any) {
     return <>
         <div class="grid">
-            <ul class="list">
+            <List>
                 <For each={books()}>
-                    {book => <li><A href={`/books/${book.author}/${book.serial_name}`}>{book.serial_name}</A></li>}
+                    {book =>
+                        <ListItem>
+                            <A href={`/books/${book.author}/${book.title}`}>
+                                <ListItemButton>
+                                    {book.title}
+                                </ListItemButton>
+                            </A>
+                        </ListItem>}
                 </For>
-            </ul>
+            </List>
             <div class="pagination">
-                <Pagination page={page} setPage={setPage} action={refetch}></Pagination>
+                <Pagination page={page} setPage={setPage} action={refetch} />
             </div>
         </div>
     </>

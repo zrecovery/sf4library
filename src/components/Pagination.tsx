@@ -1,3 +1,4 @@
+import { Button } from "@suid/material";
 import { Accessor, Setter } from "solid-js";
 import "./Pagination.css"
 interface PaginationProps {
@@ -9,9 +10,9 @@ interface PaginationProps {
 export function Pagination(props: PaginationProps) {
     const { page, setPage, action } = props
     return <div class="pagination">
-        <button onClick={() => { setPage((prev) => prev - 1); action() }}>上一页</button>
+        <Button onClick={() => { setPage((prev) => prev - 1); action() }}>上一页</Button>
         <p>{page()}</p>
-        <button onClick={() => { setPage((prev) => prev + 1); action() }}>下一页</button>
+        <Button onClick={() => { setPage((prev) => prev + 1); action() }}>下一页</Button>
     </div>
 
 }

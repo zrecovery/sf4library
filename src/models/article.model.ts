@@ -2,7 +2,7 @@ export type Article = {
     id?: number;
     title: string;
     author: string;
-    serial_name: string;
+    book: string;
     serial_order: number;
-    article_content: string;
+    body: string;
 }
