@@ -24,9 +24,13 @@
   "dependencies": {
     "@solidjs/meta": "^0.28.6",
     "@solidjs/router": "^0.8.3",
+    "@suid/icons-material": "^0.6.11",
+    "@suid/material": "^0.15.1",
+    "@suid/vite-plugin": "^0.1.5",
     "solid-js": "^1.7.11",
     "solid-start": "^0.2.32",
-    "undici": "^5.24.0"
+    "undici": "^5.24.0",
+    "vite-plugin-solid": "^2.7.0"
   },
   "engines": {
     "node": ">=16.8"
