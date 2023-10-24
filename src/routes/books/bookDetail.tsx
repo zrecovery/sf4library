@@ -1,7 +1,8 @@
+import { List } from '@suid/material';
 import { createResource, For, Resource } from 'solid-js'
-import { useParams } from 'solid-start'
-import ArticleRow from '~/components/ArticleRow';
-import { ServerRootUrl } from '~/environments';
+import { useParams } from '@solidjs/router';
+import ArticleRow from '@/components/ArticleRow';
+import { ServerRootUrl } from '@/environments';
 
 type Article = {
     id: number;
@@ -13,25 +14,24 @@ type Article = {
 }
 
 const getArticlesByBook = async (): Promise<Article[]> => {
-    const params = useParams<{ author: string, title: string }>()
-    const TITLE = params.title
-    const AUTHOR = params.author
-    const response = await fetch(`${ServerRootUrl}/books?title=${TITLE}&author=${AUTHOR}`);
+    const params = useParams<{ id: string}>()
+    const ID = params.id
+    const response = await fetch(`${ServerRootUrl}/books/${ID}`);
     return await response.json() as Article[];
 };
 
 
 function showArticle(articles: Resource<Article[]>, id: string) {
-    return <div>
+    return <List>
         <For each={articles()}>
-            {article => <li><ArticleRow article={article} /></li>}
+            {article => <ArticleRow article={article} />}
         </For>
-    </div>
+    </List>
 }
 
 
 
-export default function id() {
+export default function BookDetail() {
     const params = useParams<{ id: string }>()
     const ID = params.id
 

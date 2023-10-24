@@ -5,4 +5,7 @@ export type Article = {
     book: string;
     serial_order: number;
     body: string;
+    love: boolean;
+    book_id: number;
+    author_id: number;
 }

@@ -1,9 +1,10 @@
 {
   "name": "sf4library",
   "scripts": {
-    "dev": "solid-start dev",
-    "build": "solid-start build",
-    "start": "solid-start start"
+    "dev": "vite dev",
+    "build": "vite build",
+    "start": "vite start",
+    "format": "eslint  --ext .ts,.tsx src/ --fix"
   },
   "type": "module",
   "devDependencies": {
@@ -17,7 +18,6 @@
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-solid": "^0.12.1",
     "postcss": "^8.4.29",
-    "solid-start-node": "^0.2.32",
     "typescript": "^4.9.5",
     "vite": "^4.4.9"
   },
@@ -28,7 +28,6 @@
     "@suid/material": "^0.15.1",
     "@suid/vite-plugin": "^0.1.5",
     "solid-js": "^1.7.11",
-    "solid-start": "^0.2.32",
     "undici": "^5.24.0",
     "vite-plugin-solid": "^2.7.0"
   },

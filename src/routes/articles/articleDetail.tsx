@@ -1,9 +1,9 @@
-import { createResource, createSignal, Resource, Show } from 'solid-js'
-import { useParams } from 'solid-start'
-import { ArticleReader } from '~/components/ArticleReader';
-import { ServerRootUrl } from '~/environments';
-import { Article } from '~/models/article.model';
-import { Button } from "@suid/material"
+import { createResource, createSignal, Show } from 'solid-js';
+import { useParams } from '@solidjs/router';
+import { ArticleReader } from '@/components/ArticleReader';
+import { ServerRootUrl } from '@/environments';
+import { Article } from '@/models/article.model';
+import { Button } from "@suid/material";
 
 const fetchArticle = async (id: string): Promise<Article> =>
     (await fetch(`${ServerRootUrl}/articles/${id}`)).json();
@@ -14,12 +14,12 @@ const deleteArticleURI = (id: string) => {
         const response = await fetch(`${ServerRootUrl}/articles/${id}`, { method: "DELETE" });
         if (response.status !== 204) {
             throw new Error("删除失败");
-        };
+        }
     }
 }
 
 
-export default function id() {
+export default function ArticleDetail() {
     const params = useParams<{ id: string }>()
     const id = params.id
     const [articleId, setArticleId] = createSignal(id);

@@ -30,6 +30,11 @@ export default function Navbar() {
                     <Button color="inherit" >
                         <A href="/books">系列</A>
                     </Button>
+                    <Button color="inherit" >
+                        <A href="/authors">作者</A>
+                    </Button>
+
+
                 </Box>
             </Toolbar>
         </AppBar>

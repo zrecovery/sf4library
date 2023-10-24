@@ -1,6 +1,5 @@
-import { Button } from "@suid/material";
+import { Box, Button } from "@suid/material";
 import { Accessor, Setter } from "solid-js";
-import "./Pagination.css"
 interface PaginationProps {
     page: Accessor<number>;
     setPage: Setter<number>;
@@ -9,10 +8,26 @@ interface PaginationProps {
 
 export function Pagination(props: PaginationProps) {
     const { page, setPage, action } = props
-    return <div class="pagination">
-        <Button onClick={() => { setPage((prev) => prev - 1); action() }}>上一页</Button>
+    return <Box maxWidth="100" sx={{
+        display: "grid",
+        gridTemplateAreas: "\"prev page next\"",
+        justifyItems: "center"
+    }}>
+        <Button
+            sx={{ justifySelf: "end" }}
+            disabled={page() <= 1}
+            onClick={
+                () => {
+                    setPage((prev) => prev - 1);
+                    action()
+                }}>
+            上一页
+        </Button>
         <p>{page()}</p>
-        <Button onClick={() => { setPage((prev) => prev + 1); action() }}>下一页</Button>
-    </div>
+        <Button sx={{justifySelf: "start"}}
+            onClick={() => { setPage((prev) => prev + 1); action() }}>
+            下一页
+        </Button>
+    </Box >
 
 }

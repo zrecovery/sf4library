@@ -1,19 +1,30 @@
 .grid{
     display:grid; 
-    grid-template-areas:"list" "list"
-                        "pagination";
-    height:100vh;
-    width:100vw;
+    grid-template-areas:"searchbar" 
+                        "list"
+                        "paginationbar";
+    grid-template-rows: 2rem 1fr;
+    grid-template-columns: 1fr;
+    gap: 2rem;
 }     
 
 .list{
     display:grid;
     grid-area: list;
-    height:50vh;
+    height: calc(100%-8rem);
+    overflow: auto;
 }
 
-.pagination{
-    place-self: center;
-    grid-area: pagination;
-    height:10vh;
+ul{
+    overflow: auto;
+}
+
+.paginatibnbar{
+    grid-area: paginationbar;
+    height: 2rem;
+}
+
+.search {
+    grid-area: searchbar;
+    height: 2rem;
 }
