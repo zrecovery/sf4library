@@ -1,30 +1,31 @@
-.grid{
-    display:grid; 
-    grid-template-areas:"searchbar" 
-                        "list"
-                        "paginationbar";
-    grid-template-rows: 2rem 1fr;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-}     
-
-.list{
-    display:grid;
-    grid-area: list;
-    height: calc(100%-8rem);
-    overflow: auto;
+.grid {
+  display: grid;
+  grid-template-areas:
+    "searchbar"
+    "list"
+    "paginationbar";
+  grid-template-rows: 2rem 1fr;
+  grid-template-columns: 1fr;
+  gap: 2rem;
 }
 
-ul{
-    overflow: auto;
+.list {
+  display: grid;
+  grid-area: list;
+  height: calc(100% - 8rem);
+  overflow: auto;
 }
 
-.paginatibnbar{
-    grid-area: paginationbar;
-    height: 2rem;
+ul {
+  overflow: auto;
+}
+
+.paginatibnbar {
+  grid-area: paginationbar;
+  height: 2rem;
 }
 
 .search {
-    grid-area: searchbar;
-    height: 2rem;
+  grid-area: searchbar;
+  height: 2rem;
 }

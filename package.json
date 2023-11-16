@@ -1,37 +1,30 @@
 {
   "name": "sf4library",
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
-    "start": "vite start",
-    "format": "eslint  --ext .ts,.tsx src/ --fix"
+    "dev": "solid-start dev",
+    "build": "solid-start build",
+    "start": "solid-start start",
+    "format": "prettier --write src"
   },
   "type": "module",
   "devDependencies": {
-    "@types/node": "^20.6.1",
-    "@typescript-eslint/eslint-plugin": "^5.62.0",
-    "esbuild": "^0.14.54",
-    "eslint": "^8.49.0",
-    "eslint-config-standard-with-typescript": "^37.0.0",
-    "eslint-plugin-import": "^2.28.1",
-    "eslint-plugin-n": "^15.7.0",
-    "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-solid": "^0.12.1",
-    "postcss": "^8.4.29",
-    "typescript": "^4.9.5",
-    "vite": "^4.4.9"
+    "@types/babel__core": "^7.20.1",
+    "prettier": "^3.0.3",
+    "solid-start-node": "^0.3.9",
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0",
+    "vite-plugin-solid-styled": "^0.8.3"
   },
   "dependencies": {
-    "@solidjs/meta": "^0.28.6",
+    "@solidjs/meta": "^0.29.1",
     "@solidjs/router": "^0.8.3",
     "@suid/icons-material": "^0.6.11",
     "@suid/material": "^0.15.1",
     "@suid/vite-plugin": "^0.1.5",
-    "solid-js": "^1.7.11",
-    "undici": "^5.24.0",
-    "vite-plugin-solid": "^2.7.0"
-  },
-  "engines": {
-    "node": ">=16.8"
+    "is-what": "^4.1.16",
+    "solid-js": "^1.8.5",
+    "solid-start": "^0.3.9",
+    "solid-styled": "^0.8.2",
+    "vite-plugin-solid": "^2.7.2"
   }
 }

@@ -1,2 +1,2 @@
-export const ServerRootUrl = `http://127.0.0.1:3001`;
-export const WebRootUrl = `http://127.0.0.1:3000`;
+export const ServerRootUrl = `https://localhost:8081/api`;
+export const WebRootUrl = `https://localhost:8081`;

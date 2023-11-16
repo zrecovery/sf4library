@@ -1,3 +1,3 @@
 import { ServerRootUrl, WebRootUrl } from "./dev";
 
-export { ServerRootUrl, WebRootUrl }
+export { ServerRootUrl, WebRootUrl };
