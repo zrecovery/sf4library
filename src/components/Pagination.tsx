@@ -1,5 +1,6 @@
 import { Box, Button } from "@suid/material";
 import { Accessor, Setter } from "solid-js";
+
 interface PaginationProps {
   page: Accessor<number>;
   setPage: Setter<number>;
@@ -8,6 +9,17 @@ interface PaginationProps {
 
 export function Pagination(props: PaginationProps) {
   const { page, setPage, action } = props;
+
+  const handlePrevPage = () => {
+    setPage((prev) => prev - 1);
+    action();
+  };
+
+  const handleNextPage = () => {
+    setPage((prev) => prev + 1);
+    action();
+  };
+
   return (
     <Box
       maxWidth="100"
@@ -20,20 +32,14 @@ export function Pagination(props: PaginationProps) {
       <Button
         sx={{ justifySelf: "end" }}
         disabled={page() <= 1}
-        onClick={() => {
-          setPage((prev) => prev - 1);
-          action();
-        }}
+        onClick={handlePrevPage}
       >
         上一页
       </Button>
       <p>{page()}</p>
       <Button
         sx={{ justifySelf: "start" }}
-        onClick={() => {
-          setPage((prev) => prev + 1);
-          action();
-        }}
+        onClick={handleNextPage}
       >
         下一页
       </Button>

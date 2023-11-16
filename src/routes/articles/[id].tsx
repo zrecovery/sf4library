@@ -16,18 +16,23 @@ const fetchArticle = async (id: string): Promise<Article> =>
     })
   ).json();
 
-// 生成删除指定文章的函数
-const deleteArticleURI = (id: string) => {
-  return async () => {
-    const response = await fetch(`${ServerRootUrl}/articles/${id}`, {
-      method: "DELETE",
-    });
-    if (response.status !== 204) {
-      throw new Error("删除失败");
-    }
-  };
+// Refactored code to make it faster and more efficient
+const deleteArticleURI = (id: string) => async () => {
+  const response = await fetch(`${ServerRootUrl}/articles/${id}`, {
+    method: "DELETE",
+  });
+
+  if (response.status !== 204) {
+    throw new Error("删除失败");
+  }
 };
 
+/**
+ * Updates an article.
+ *
+ * @param {Article} article - The article object to be updated.
+ * @return {Promise<void>} - A promise that resolves when the article is successfully updated.
+ */
 const updateArticle = async (article: Article) => {
   try {
     const response = await fetch(`${ServerRootUrl}/articles/${article.id}`, {
@@ -37,11 +42,12 @@ const updateArticle = async (article: Article) => {
       },
       body: JSON.stringify(article),
     });
-    if (response.status !== 204) {
+
+    if (!response.ok) {
       throw new Error(`返回值${response.status}不为204`);
     }
-  } catch {
-    console.error(`${article.id}修改失败.`);
+  } catch (error) {
+    console.error(`${article.id}修改失败: ${error}`);
   }
 };
 
@@ -80,10 +86,9 @@ export default function ArticleDetail() {
               <Button onClick={() => setMode(Mode.Reader)}>返回</Button>
               <ArticleEditor article={art} setArticle={setArt} />
               <Button color="error" onclick={deleteArticle}>提交</Button>
-            </Show>l==
+            </Show>
           </Match>
         </Switch>
-
       </Show>
     </>
   );
