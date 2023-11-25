@@ -1,3 +1,4 @@
+import { useNavigate } from "solid-start";
 import { Article } from "../models/article.model";
 import { Box, Typography } from "@suid/material";
 
@@ -6,6 +7,7 @@ interface ArticleReaderProps {
 }
 
 export function ArticleReader(props: ArticleReaderProps) {
+  const navigate = useNavigate();
   return (
     <Box
       maxWidth="50rem"
@@ -18,7 +20,22 @@ export function ArticleReader(props: ArticleReaderProps) {
         <h1>{props.article.title}</h1>
       </Typography>
       <Typography variant="h6" gutterBottom component="div">
-        <h2>{props.article.author}</h2>
+        <h2
+          onClick={() => {
+            navigate(`/authors/${props.article.author_id}`);
+          }}
+        >
+          {props.article.author}
+        </h2>
+      </Typography>
+      <Typography variant="h6" gutterBottom component="div">
+        <h3
+          onClick={() => {
+            navigate(`/books/${props.article.book_id}`);
+          }}
+        >
+          {props.article.book}
+        </h3>
       </Typography>
       <Typography
         variant="body1"

@@ -1,91 +1,76 @@
-import { createResource, createSignal, Match, Show, Switch } from "solid-js";
-import { ArticleReader } from "../../components/ArticleReader";
-import { ServerRootUrl } from "../../environments";
+import { createSignal, Match, Show, Switch } from "solid-js";
+import { ArticleReader } from "~/components/ArticleReader";
 import { Button } from "@suid/material";
-import { Article } from "../../models/article.model";
+import { Article } from "~/models/article.model";
 import { useParams } from "solid-start";
 import { ArticleEditor } from "~/components/ArticleEditor";
-
-const fetchArticle = async (id: string): Promise<Article> =>
-  (
-    await fetch(`${ServerRootUrl}/articles/${id}`, {
-      mode: "no-cors",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    })
-  ).json();
-
-// Refactored code to make it faster and more efficient
-const deleteArticleURI = (id: string) => async () => {
-  const response = await fetch(`${ServerRootUrl}/articles/${id}`, {
-    method: "DELETE",
-  });
-
-  if (response.status !== 204) {
-    throw new Error("删除失败");
-  }
-};
-
-/**
- * Updates an article.
- *
- * @param {Article} article - The article object to be updated.
- * @return {Promise<void>} - A promise that resolves when the article is successfully updated.
- */
-const updateArticle = async (article: Article) => {
-  try {
-    const response = await fetch(`${ServerRootUrl}/articles/${article.id}`, {
-      method: "Put",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(article),
-    });
-
-    if (!response.ok) {
-      throw new Error(`返回值${response.status}不为204`);
-    }
-  } catch (error) {
-    console.error(`${article.id}修改失败: ${error}`);
-  }
-};
+import {
+  ArticleFetchReposirory,
+  ArticleService,
+} from "~/services/article.service";
 
 export default function ArticleDetail() {
   const params = useParams<{ id: string }>();
-  const id = params.id;
-  const [articleId, _] = createSignal(id);
-  const [article] = createResource(articleId, fetchArticle);
-  const deleteArticle = deleteArticleURI(id);
-  // article() 必须预先执行，否则后续会处于undefined.
-  article();
-  const [art, setArt] = createSignal(article()!);
+  const id = Number(params.id);
+
   enum Mode {
     Reader,
-    Editor
+    Editor,
   }
   const [mode, setMode] = createSignal<Mode>(Mode.Reader);
+
+  const articleRepository = new ArticleFetchReposirory();
+  const articleService = new ArticleService(articleRepository);
+
+  const [article, setArticle] = createSignal<Article>({
+    title: "",
+    author: "",
+    book: "",
+    chapter_order: 0,
+    body: "",
+    love: false,
+    book_id: 0,
+    author_id: 0,
+  });
+
+  articleService.getArticle(id).then((article) => {
+    setArticle(article);
+  });
+  const deleteArticle = async () => {
+    await articleService.deleteArticle(id);
+  };
 
   return (
     <>
       <Show
-        when={!article.loading && typeof article() !== "undefined"}
+        when={typeof article() !== "undefined"}
         fallback={<div>Loading...</div>}
       >
-
-        <Switch >
+        <Switch>
           <Match when={mode() === Mode.Reader}>
-            <Button onClick={() => { setMode(Mode.Editor); console.log(article()); setArt(article()); }}>修改</Button>
+            <Button
+              onClick={() => {
+                setArticle(article()!);
+                setMode(Mode.Editor);
+              }}
+            >
+              修改
+            </Button>
             <Button color="error" onclick={deleteArticle}>
               删除
             </Button>
             <ArticleReader article={article()!} />
           </Match>
           <Match when={mode() === Mode.Editor}>
-            <Show when={typeof article() !== "undefined"} fallback={<div>文章不存在</div>}>
+            <Show
+              when={typeof article() !== "undefined"}
+              fallback={<div>文章不存在</div>}
+            >
               <Button onClick={() => setMode(Mode.Reader)}>返回</Button>
-              <ArticleEditor article={art} setArticle={setArt} />
-              <Button color="error" onclick={deleteArticle}>提交</Button>
+              <ArticleEditor article={article} setArticle={setArticle} />
+              <Button color="error" onclick={deleteArticle}>
+                提交
+              </Button>
             </Show>
           </Match>
         </Switch>

@@ -10,11 +10,18 @@ import {
 import { Accessor, createSignal, Setter, Show } from "solid-js";
 import { Favorite, FavoriteBorder } from "@suid/icons-material";
 import { ServerRootUrl } from "../environments";
-import { A, useNavigate } from "solid-start";
+import { A } from "solid-start";
+import {
+  ArticleFetchReposirory,
+  ArticleService,
+} from "~/services/article.service";
 
 type ArticleRowProps = {
   article: Article;
 };
+
+const articleRepository = new ArticleFetchReposirory();
+const articleService = ArticleService.single(articleRepository);
 
 async function updateFavorite(
   article: Article,
@@ -24,16 +31,7 @@ async function updateFavorite(
   setFavorite(!favorite());
   article.love = favorite();
   try {
-    const response = await fetch(`${ServerRootUrl}/articles/${article.id}`, {
-      method: "Put",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(article),
-    });
-    if (response.status !== 204) {
-      throw new Error(`返回值${response.status}不为204`);
-    }
+    articleService.updateArticle(article);
   } catch {
     console.error(`${article.id}修改失败.`);
   }
@@ -42,8 +40,7 @@ async function updateFavorite(
 export function ArticleRow(props: ArticleRowProps) {
   const { article } = props;
   const [favorite, setFavorite] = createSignal(article.love);
-  const navigate = useNavigate();
-  
+
   return (
     <>
       <ListItem>

@@ -1,12 +1,18 @@
 import { A } from "solid-start";
 import { AppBar, Box, Button, IconButton, Toolbar } from "@suid/material";
-import ArrowBackIosNewIcon from '@suid/icons-material/ArrowBackIosNew';
+import ArrowBackIosNewIcon from "@suid/icons-material/ArrowBackIosNew";
 
 export default function Navbar() {
   return (
     <AppBar position="static">
       <Toolbar>
-        <IconButton size="large" edge="start" color="inherit" aria-label="menu" onClick={() => window.history.back()}>
+        <IconButton
+          size="large"
+          edge="start"
+          color="inherit"
+          aria-label="menu"
+          onClick={() => window.history.back()}
+        >
           <ArrowBackIosNewIcon />
         </IconButton>
         <Box>

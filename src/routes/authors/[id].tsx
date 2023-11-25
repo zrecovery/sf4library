@@ -3,31 +3,21 @@ import { createResource, For, Resource } from "solid-js";
 import { A, useNavigate, useParams } from "solid-start";
 import { ServerRootUrl } from "../../environments";
 import { Book } from "../../models/book.model";
+import { QueryResult } from "~/models/query-result.model";
 
-/**
- * Retrieves a list of books by author ID.
- *
- * @return {Promise<Book[]>} A promise that resolves to an array of books.
- */
-const getBooksByAuthorId = async (): Promise<Book[]> => {
+const getBooksByAuthorId = async (): Promise<QueryResult<Book[]>> => {
   const params = useParams<{ id: string }>();
   const ID = params.id;
-  const response = await fetch(`${ServerRootUrl}/authors/${ID}`);
-  return (await response.json()) as Book[];
+  const response = await fetch(`${ServerRootUrl}/authors/${ID}?page=1`);
+  return (await response.json()) as QueryResult<Book[]>;
 };
 
-/**
- * Renders a list of books as a series of list items.
- *
- * @param {Resource<Book[]>} books - The resource containing an array of books.
- * @return {JSX.Element} The JSX element representing the list of books.
- */
-function showBooks(books: Resource<Book[]>) {
+function showBooks(books: Resource<QueryResult<Book[]>>) {
   const navigate = useNavigate();
 
   return (
     <List>
-      <For each={books()}>
+      <For each={books()?.detail}>
         {(book) => (
           <ListItem>
             <ListItemButton
