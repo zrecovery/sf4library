@@ -1,13 +1,10 @@
 import { createSignal, Match, Show, Switch } from "solid-js";
 import { ArticleReader } from "~/components/ArticleReader";
 import { Button } from "@suid/material";
-import { Article } from "~/models/article.model";
+import { Article } from "~/core/articles/article.model";
 import { useParams } from "solid-start";
 import { ArticleEditor } from "~/components/ArticleEditor";
-import {
-  ArticleFetchReposirory,
-  ArticleService,
-} from "~/services/article.service";
+import { useService } from "../store/service";
 
 export default function ArticleDetail() {
   const params = useParams<{ id: string }>();
@@ -19,9 +16,7 @@ export default function ArticleDetail() {
   }
   const [mode, setMode] = createSignal<Mode>(Mode.Reader);
 
-  const articleRepository = new ArticleFetchReposirory();
-  const articleService = new ArticleService(articleRepository);
-
+  const services = useService();
   const [article, setArticle] = createSignal<Article>({
     title: "",
     author: "",
@@ -33,11 +28,11 @@ export default function ArticleDetail() {
     author_id: 0,
   });
 
-  articleService.getArticle(id).then((article) => {
+  services?.articleService.getArticle(id).then((article) => {
     setArticle(article);
   });
   const deleteArticle = async () => {
-    await articleService.deleteArticle(id);
+    await services?.articleService.deleteArticle(id);
   };
 
   return (

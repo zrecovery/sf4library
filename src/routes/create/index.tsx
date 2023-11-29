@@ -1,8 +1,8 @@
 import { Button } from "@suid/material";
-import { Show, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
 import { ArticleEditor } from "~/components/ArticleEditor";
-import { ServerRootUrl } from "~/environments";
-import { Article } from "~/models/article.model";
+import { Config } from "~/infrastructure/config";
+import { Article } from "~/core/articles/article.model";
 
 export default function Create() {
   const [article, setArticle] = createSignal<Article>({
@@ -18,7 +18,7 @@ export default function Create() {
 
   const createArticle = async () => {
     try {
-      const response = await fetch(`${ServerRootUrl}/articles`, {
+      const response = await fetch(`${Config.ServerRootUrl}/articles`, {
         method: "Post",
         headers: {
           "Content-Type": "application/json",

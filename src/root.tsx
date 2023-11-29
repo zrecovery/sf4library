@@ -11,7 +11,8 @@ import {
   Scripts,
   Title,
 } from "solid-start";
-import Navbar from "./components/header";
+import Navbar from "./components/Navbar";
+import { ServiceProvider } from "./routes/store/service.provider";
 
 export default function Root() {
   return (
@@ -24,10 +25,12 @@ export default function Root() {
       <Body>
         <Suspense>
           <ErrorBoundary>
-            <Navbar />
-            <Routes>
-              <FileRoutes />
-            </Routes>
+            <ServiceProvider>
+              <Navbar />
+              <Routes>
+                <FileRoutes />
+              </Routes>
+            </ServiceProvider>
           </ErrorBoundary>
         </Suspense>
         <Scripts />

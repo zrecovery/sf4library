@@ -4,11 +4,13 @@
     "dev": "solid-start dev",
     "build": "solid-start build",
     "start": "solid-start start",
-    "format": "prettier --write src"
+    "format": "prettier --write src",
+    "lint": "eslint src/**/*.ts"
   },
   "type": "module",
   "devDependencies": {
     "@types/babel__core": "^7.20.1",
+    "bun-types": "^1.0.14",
     "prettier": "^3.0.3",
     "solid-start-node": "^0.3.9",
     "typescript": "^5.2.2",
@@ -21,10 +23,15 @@
     "@suid/icons-material": "^0.6.11",
     "@suid/material": "^0.15.1",
     "@suid/vite-plugin": "^0.1.5",
+    "@typescript-eslint/parser": "^6.13.1",
+    "eslint": "^8.54.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "eslint-plugin-solid": "^0.13.0",
     "is-what": "^4.1.16",
     "solid-js": "^1.8.5",
     "solid-start": "^0.3.9",
     "solid-styled": "^0.8.2",
+    "solid-testing-library": "^0.5.1",
     "vite-plugin-solid": "^2.7.2"
   }
 }

@@ -8,16 +8,14 @@ import {
   Show,
 } from "solid-js";
 import ArticleRow from "../../components/ArticleRow";
-import { ServerRootUrl } from "../../environments";
 import { useParams } from "solid-start";
-import { QueryResult } from "~/models/query-result.model";
-import { BookFetchRepository, BookService } from "~/services/book.service";
-import { Article } from "~/models/article.model";
+import { Article } from "~/core/articles/article.model";
 import { Pagination } from "~/components/Pagination";
 
+import { useService } from "../store/service";
+
 export default function BookDetail() {
-  const bookRepository = new BookFetchRepository();
-  const bookService = new BookService(bookRepository);
+  const services = useService();
   const [articles, setArticles] = createSignal<Array<Article>>([
     {
       title: "",
@@ -35,7 +33,7 @@ export default function BookDetail() {
   createEffect(async () => {
     const params = useParams<{ id: string }>();
     const ID = Number(params.id);
-    const response = await bookService.getBook(ID, currentPage(), 10);
+    const response = await services?.bookService.getBook(ID, currentPage(), 10);
     setArticles(response?.detail ?? []);
     setPage(response?.page ?? 1);
   });

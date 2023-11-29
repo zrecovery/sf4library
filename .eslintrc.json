@@ -1,11 +1,13 @@
 {
     "env": {
         "browser": true,
+        "node": true,
         "es2021": true
     },
     "parser": "@typescript-eslint/parser",
     "plugins": [
-        "solid"
+        "solid",
+        "prettier"
     ],
     "extends": [
         "eslint:recommended",

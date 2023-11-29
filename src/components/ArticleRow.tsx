@@ -1,4 +1,4 @@
-import { Article } from "../models/article.model";
+import { Article } from "../core/articles/article.model";
 import {
   ListItem,
   ListItemText,
@@ -9,31 +9,29 @@ import {
 } from "@suid/material";
 import { Accessor, createSignal, Setter, Show } from "solid-js";
 import { Favorite, FavoriteBorder } from "@suid/icons-material";
-import { ServerRootUrl } from "../environments";
 import { A } from "solid-start";
-import {
-  ArticleFetchReposirory,
-  ArticleService,
-} from "~/services/article.service";
+import { useService } from "~/routes/store/service";
 
 type ArticleRowProps = {
   article: Article;
 };
 
-const articleRepository = new ArticleFetchReposirory();
-const articleService = ArticleService.single(articleRepository);
+const services = useService();
 
 async function updateFavorite(
   article: Article,
   favorite: Accessor<boolean>,
   setFavorite: Setter<boolean>,
 ) {
-  setFavorite(!favorite());
-  article.love = favorite();
+  const newFavoriteValue = !favorite();
+
+  setFavorite(newFavoriteValue);
+  article.love = newFavoriteValue;
+
   try {
-    articleService.updateArticle(article);
-  } catch {
-    console.error(`${article.id}修改失败.`);
+    await services?.articleService.updateArticle(article);
+  } catch (error) {
+    console.error(`${article.id}修改失败.`, error);
   }
 }
 

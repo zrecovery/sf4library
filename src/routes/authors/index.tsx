@@ -1,25 +1,34 @@
 import { List, ListItem, ListItemButton } from "@suid/material";
-import { createMemo, createResource, createSignal, For } from "solid-js";
-
-import { Pagination } from "../../components/Pagination";
-import { ServerRootUrl } from "../../environments";
+import { createEffect, createSignal, For } from "solid-js";
+import { Pagination } from "~/components/Pagination";
 import "./index.css";
-import { Author } from "../../models/author.model";
-import { A, useNavigate, useSearchParams } from "solid-start";
+import { Author } from "~/core/authors/author.model";
+import { useNavigate, useSearchParams } from "solid-start";
+import { useService } from "../store/service";
 
 export default function AuthorList() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [page, setPage] = createSignal(Number(searchParams.page ?? 1));
-  const authorsListURI = createMemo(
-    () => `${ServerRootUrl}/authors?page=${page()}`,
-  );
-  const getAuthors = async (): Promise<Author[]> => {
-    const response = await fetch(authorsListURI());
-    return (await response.json()) as Author[];
-  };
 
-  const [authors, { refetch }] = createResource(getAuthors);
+  const [currentPage, setCurrentPage] = createSignal(
+    Number(searchParams.page ?? 1),
+  );
+  const [totalPage, setTotalPage] = createSignal(1);
+  const [authors, setAuthors] = createSignal([] as Author[]);
+
+  const services = useService();
+
+  createEffect(() => {
+    services?.authorService
+      .getAuthors({
+        page: currentPage(),
+        size: 10,
+      })
+      .then((res) => {
+        setAuthors(res.detail);
+        setTotalPage(res.page);
+      });
+  });
 
   return (
     <>
@@ -40,7 +49,11 @@ export default function AuthorList() {
           </For>
         </List>
         <div class="pagination">
-          <Pagination page={page} setPage={setPage} action={refetch} />
+          <Pagination
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            totalPage={totalPage}
+          />
         </div>
       </div>
     </>

@@ -1,11 +1,12 @@
 import { List, ListItem, ListItemButton } from "@suid/material";
 import { createEffect, createSignal, For } from "solid-js";
-import { A, useNavigate, useSearchParams } from "solid-start";
+import { useNavigate, useSearchParams } from "solid-start";
 import { Pagination } from "../../components/Pagination";
 import "./index.css";
-import { BookFetchRepository, BookService } from "~/services/book.service";
-import { QueryResult } from "~/models/query-result.model";
-import { Book } from "~/models/book.model";
+import { Book } from "~/core/books/book.model";
+
+import { QueryResult } from "~/core/dto/query-result.model";
+import { useService } from "../store/service";
 
 export default function BooksList() {
   const [searchParams] = useSearchParams();
@@ -13,12 +14,10 @@ export default function BooksList() {
     Number(searchParams.page ?? 1),
   );
   const [data, setData] = createSignal<QueryResult<Book[]>>();
-  const bookRepository = new BookFetchRepository();
-  const bookService = new BookService(bookRepository);
-
+  const service = useService();
   const [page, setPage] = createSignal(1);
   createEffect(async () => {
-    const response = await bookService.getBooks(currentPage(), 10);
+    const response = await service.bookService.getBooks(currentPage(), 10);
     setData(response);
     setPage(response?.page ?? 1);
   });

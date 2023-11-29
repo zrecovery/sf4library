@@ -7,7 +7,7 @@ import {
 } from "@suid/material";
 import { EventParam } from "@suid/types/events";
 import { Accessor, Setter } from "solid-js";
-import { Article } from "~/models/article.model";
+import { Article } from "~/core/articles/article.model";
 
 export function ArticleEditor(props: {
   article: Accessor<Article>;

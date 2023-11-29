@@ -1,5 +1,5 @@
 import { useNavigate } from "solid-start";
-import { Article } from "../models/article.model";
+import { Article } from "../core/articles/article.model";
 import { Box, Typography } from "@suid/material";
 
 interface ArticleReaderProps {

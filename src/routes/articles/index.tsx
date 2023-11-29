@@ -1,14 +1,11 @@
 import { createEffect, createSignal, For, Show } from "solid-js";
 import { ArticleRow } from "~/components/ArticleRow";
 import { Pagination } from "~/components/Pagination";
-import { Article } from "~/models/article.model";
+import { Article } from "~/core/articles/article.model";
 import "./index.css";
 import { Button, List, TextField, Switch } from "@suid/material";
-import { QueryResult } from "~/models/query-result.model";
-import {
-  ArticleFetchReposirory,
-  ArticleService,
-} from "~/services/article.service";
+import { QueryResult } from "~/core/dto/query-result.model";
+import { useService } from "../store/service";
 
 export default function ArticlesList() {
   const [page, setPage] = createSignal(1);
@@ -16,13 +13,12 @@ export default function ArticlesList() {
   const [keywords, setKeywords] = createSignal("");
   const [searchkeywords, setSearchKeywords] = createSignal("");
   const [love, setLove] = createSignal(false);
-  const articleRepository = new ArticleFetchReposirory();
-  const articleService = new ArticleService(articleRepository);
 
   const [data, setData] = createSignal<QueryResult<Article[]>>();
+  const services = useService();
 
   createEffect(async () => {
-    const response = await articleService.getArticles({
+    const response = await services?.articleService.getArticles({
       page: currentPage(),
       size: 10,
       keywords: searchkeywords(),
