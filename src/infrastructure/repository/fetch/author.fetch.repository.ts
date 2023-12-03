@@ -12,15 +12,17 @@ export class AuthorFetchRepository implements AuthorRepository {
   async getAuthor(id: number): Promise<Book[]> {
     const response = await fetch(`${Config.ServerRootUrl}/authors/${id}`);
     if (!response.ok) {
-      throw new Error('Failed to fetch author');
+      throw new Error("Failed to fetch author");
     }
     return response.json<Book[]>();
   }
   async getAuthors(query: QueryParams): Promise<QueryResult<Author[]>> {
     const queryParams = objectToQueryParams(query);
-    const response = await fetch(`${Config.ServerRootUrl}/authors?${queryParams}`);
+    const response = await fetch(
+      `${Config.ServerRootUrl}/authors?${queryParams}`,
+    );
     if (!response.ok) {
-      throw new Error('Failed to fetch authors');
+      throw new Error("Failed to fetch authors");
     }
     return response.json<QueryResult<Author[]>>();
   }

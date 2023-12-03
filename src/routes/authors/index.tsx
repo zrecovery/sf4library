@@ -1,7 +1,6 @@
 import { List, ListItem, ListItemButton } from "@suid/material";
 import { createEffect, createSignal, For } from "solid-js";
 import { Pagination } from "~/components/Pagination";
-import "./index.css";
 import { Author } from "~/core/authors/author.model";
 import { useNavigate, useSearchParams } from "solid-start";
 import { useService } from "../store/service";
@@ -32,8 +31,8 @@ export default function AuthorList() {
 
   return (
     <>
-      <div class="grid">
-        <List class="list">
+      <div class="grid grid-rows-9 h-full">
+        <List class="grid-row-start-1 grid-row-end-9">
           <For each={authors()}>
             {(author) => (
               <ListItem>
@@ -48,7 +47,7 @@ export default function AuthorList() {
             )}
           </For>
         </List>
-        <div class="pagination">
+        <div class="grid-row-start-9 grid-row-end-10">
           <Pagination
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}

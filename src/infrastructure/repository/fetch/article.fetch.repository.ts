@@ -10,14 +10,16 @@ import { objectToQueryParams } from "~/utils/query-params.util";
 export class ArticleFetchReposirory implements ArticleReposirory {
   async getArticles(query: QueryParams): Promise<QueryResult<Article[]>> {
     const queryParams = objectToQueryParams(query);
-    const response = await fetch(`${Config.ServerRootUrl}/articles?${queryParams}`);
+    const response = await fetch(
+      `${Config.ServerRootUrl}/articles?${queryParams}`,
+    );
     const articles = await response.json();
     return articles as QueryResult<Article[]>;
   }
   async getArticle(id: number): Promise<Article> {
     const response = await fetch(`${Config.ServerRootUrl}/articles/${id}`);
     if (!response.ok) {
-      throw new Error('Failed to fetch article');
+      throw new Error("Failed to fetch article");
     }
     return response.json() as Promise<Article>;
   }
@@ -36,13 +38,16 @@ export class ArticleFetchReposirory implements ArticleReposirory {
   }
 
   updateArticle = async (article: Article): Promise<void> => {
-    const response = await fetch(`${Config.ServerRootUrl}/articles/${article.id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `${Config.ServerRootUrl}/articles/${article.id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(article),
       },
-      body: JSON.stringify(article),
-    });
+    );
 
     if (!response.ok) {
       throw new Error("Failed to update article");

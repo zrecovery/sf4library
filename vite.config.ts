@@ -2,10 +2,11 @@ import { defineConfig } from 'vite';
 import solid from "solid-start/vite";
 import suidPlugin from "@suid/vite-plugin";
 import solidStyled from "vite-plugin-solid-styled";
-
+import unocssPlugin from "unocss/vite";
 
 export default defineConfig({
   plugins: [
+    unocssPlugin(),
     suidPlugin(),
     solid({ ssr: false }),
     solidStyled({

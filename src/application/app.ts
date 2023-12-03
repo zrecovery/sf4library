@@ -13,7 +13,7 @@ import { BookMockRepository } from "~/infrastructure/repository/mock/book.mock.r
 export const createRepository = <T extends Repository>(
   devRepository: T,
   prodRepository: T,
-) => process.env.NODE_ENV === "development" ? devRepository : prodRepository;
+) => (process.env.NODE_ENV === "development" ? devRepository : prodRepository);
 
 export const articleRepository: ArticleReposirory = createRepository(
   new ArticleMockRepository(),

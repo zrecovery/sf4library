@@ -2,7 +2,6 @@ import { List, ListItem, ListItemButton } from "@suid/material";
 import { createEffect, createSignal, For } from "solid-js";
 import { useNavigate, useSearchParams } from "solid-start";
 import { Pagination } from "../../components/Pagination";
-import "./index.css";
 import { Book } from "~/core/books/book.model";
 
 import { QueryResult } from "~/core/dto/query-result.model";
@@ -17,7 +16,7 @@ export default function BooksList() {
   const service = useService();
   const [page, setPage] = createSignal(1);
   createEffect(async () => {
-    const response = await service.bookService.getBooks(currentPage(), 10);
+    const response = await service?.bookService.getBooks(currentPage(), 10);
     setData(response);
     setPage(response?.page ?? 1);
   });
@@ -25,8 +24,8 @@ export default function BooksList() {
   const navigate = useNavigate();
   return (
     <>
-      <div class="grid">
-        <List class="list">
+      <div class="grid grid-rows-9 h-full">
+        <List class="grid-row-start-1 grid-row-end-9">
           <For each={data()?.detail}>
             {(book) => (
               <ListItem>
@@ -41,7 +40,7 @@ export default function BooksList() {
             )}
           </For>
         </List>
-        <div class="pagination">
+        <div class="grid-row-start-9 grid-row-end-10">
           <Pagination
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}

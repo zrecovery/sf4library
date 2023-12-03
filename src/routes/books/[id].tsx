@@ -1,12 +1,5 @@
 import { List } from "@suid/material";
-import {
-  createEffect,
-  createResource,
-  createSignal,
-  For,
-  Resource,
-  Show,
-} from "solid-js";
+import { createEffect, createSignal, For, Show } from "solid-js";
 import ArticleRow from "../../components/ArticleRow";
 import { useParams } from "solid-start";
 import { Article } from "~/core/articles/article.model";
@@ -39,16 +32,20 @@ export default function BookDetail() {
   });
   return (
     <Show when={articles()} fallback="<h1>Loading</h1>">
-      <List>
-        <For each={articles()}>
-          {(article) => <ArticleRow article={article} />}
-        </For>
-      </List>
-      <Pagination
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        totalPage={page}
-      />
+      <div class="grid grid-rows-9 h-full">
+        <List class="grid-row-start-1 grid-row-end-9">
+          <For each={articles()}>
+            {(article) => <ArticleRow article={article} />}
+          </For>
+        </List>
+        <div class="grid-row-start-9 grid-row-end-10">
+          <Pagination
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            totalPage={page}
+          />
+        </div>
+      </div>
     </Show>
   );
 }

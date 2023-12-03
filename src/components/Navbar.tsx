@@ -17,19 +17,29 @@ export default function Navbar() {
         </IconButton>
         <Box>
           <Button color="inherit">
-            <A href="/">首页</A>
+            <A class="text-white decoration-none" href="/">
+              首页
+            </A>
           </Button>
           <Button color="inherit">
-            <A href="/articles">文章</A>
+            <A class="text-white decoration-none" href="/articles">
+              文章
+            </A>
           </Button>
           <Button color="inherit">
-            <A href="/books">系列</A>
+            <A class="text-white decoration-none" href="/books">
+              系列
+            </A>
           </Button>
           <Button color="inherit">
-            <A href="/authors">作者</A>
+            <A class="text-white decoration-none" href="/authors">
+              作者
+            </A>
           </Button>
           <Button color="inherit">
-            <A href="/create">新建</A>
+            <A class="text-white decoration-none" href="/create">
+              新建
+            </A>
           </Button>
         </Box>
       </Toolbar>

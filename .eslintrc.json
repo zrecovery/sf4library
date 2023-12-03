@@ -11,7 +11,8 @@
     ],
     "extends": [
         "eslint:recommended",
-        "plugin:solid/typescript"
+        "plugin:solid/typescript",
+        "@unocss"
     ],
     "parserOptions": {
         "ecmaVersion": "latest",
