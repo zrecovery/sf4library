@@ -22,6 +22,7 @@
   "dependencies": {
     "@solidjs/meta": "^0.29.1",
     "@solidjs/router": "^0.8.3",
+    "@sqlite.org/sqlite-wasm": "^3.44.2-build1",
     "@suid/icons-material": "^0.6.11",
     "@suid/material": "^0.15.1",
     "@suid/vite-plugin": "^0.1.5",
