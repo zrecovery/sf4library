@@ -1,92 +1,61 @@
 import { Article } from "~/core/articles/article.model";
 import { ArticleReposirory, QueryParams } from "~/core/articles/article.repository";
 import { QueryResult } from "~/core/dto/query-result.model";
-import { Database } from '@sqlite.org/sqlite-wasm';
 
-const ArticleColumn = 'articles.id, articles.title, articles.body, authors.name as author, books.title as book, chapters.chapter_order, articles.love, chapters.book_id, authors.id as author_id ';
-const ArticleFullJoinTable = '((articles JOIN chapters ON chapters.article_id = articles.id) JOIN books ON chapters.book_id = books.id) JOIN authors ON authors.id = books.author_id WHERE articles.id';
+
+const worker = new Worker(new URL('./article.sqlite.worker.ts', import.meta.url), { type: 'module' });
 
 export class ArticleSqliteRepository implements ArticleReposirory {
-    #db: Database
-    constructor(db: Database) {
-        this.#db = db
-    }
 
-    getArticles(query: QueryParams): Promise<QueryResult<Article[]>> {
-        const condition = `${query.keywords ? "WHERE body match ?" : ""}`
-        const stmt = this.#db.prepare(`SELECT count(rowid) FROM articles_fts ${condition};`);
+    constructor() {}
 
-        if (query.keywords) {
-            stmt.bind([`${query.keywords}`])
-        }
-        let total = 1
-        while (stmt.step()) {
-            const result = stmt.get({});
-            total = Math.ceil(result["count(rowid)"] ?? 10 / query.size! -query.size!)
-        }
-
-
-        const articles: Article[] = [];
-        const stmt2 = this.#db.prepare("SELECT rowid FROM articles_fts WHERE body like ? ORDER BY rowid DESC LIMIT ? OFFSET ?");
-        stmt2.bind([`%${query.keywords}%`, query.size!, query.page! * query.size!]);
-        const ids: number[] = []
-        while (stmt2.step()) {
-            ids.push(stmt2.get([])[0] as number);
-        }
-
-        const IdQuery = `(${"?, ".repeat(query.size! - 1)}?) `
-
-        const stmt3 = this.#db.prepare(`SELECT ${ArticleColumn} FROM ${ArticleFullJoinTable} in ${IdQuery}`);
-        stmt3.bind(ids)
-        while (stmt3.step()) {
-            articles.push(stmt3.get({}) as unknown as Article)
-        }
-
+    async getArticles(query: QueryParams): Promise<QueryResult<Article[]>> {
         return new Promise<QueryResult<Article[]>>((resolve) => {
-            resolve({
-                detail: articles,
-                page: total,
-                size: query.size!,
-                current_page: query.page!,
-            })
-        })
-
+            const onMessage = (event: { data: { type: string, result: QueryResult<Article[]> } }) => {
+                console.log("getArticles", event.data)
+                if (event.data.type === "getArticles") {
+                    resolve(event.data.result);
+                }
+            };
+            worker.onmessage = onMessage;
+            worker.postMessage({ type: 'getArticles', query: query });
+        });
     }
 
     getArticle(id: number): Promise<Article> {
-        const stmt = this.#db.prepare("SELECT articles.id, articles.title, articles.body, authors.name as author, books.title as book, chapters.chapter_order, articles.love, chapters.book_id, authors.id as author_id FROM ((articles JOIN chapters ON chapters.article_id = articles.id) JOIN books ON chapters.book_id = books.id) JOIN authors ON authors.id = books.author_id WHERE articles.id = ?");
-        stmt.bind([id])
-        stmt.step();
-        const article = stmt.get({}) as unknown as Article;
+        worker.postMessage({ type: 'getArticle', id: id });
         return new Promise<Article>((resolve) => {
-            resolve(article)
-        });
+            worker.onmessage = (event: { data: Article }) => {
+                resolve(event.data)
+            }
+        })
     }
 
     createArticle(article: Article): Promise<void> {
-        const stmt = this.#db.prepare("INSERT INTO articles (title, body, author_id, book_id, chapter_order, love) VALUES (?, ?, ?, ?, ?, ?)");
-        stmt.bind([article.title, article.body, article.author_id, article.book_id, article.chapter_order, String(article.love)]);
+        worker.postMessage({ type: 'createArticle', article: article });
         return new Promise<void>((resolve) => {
-            resolve();
-        });
+            worker.onmessage = (event: { data: void }) => {
+                resolve(event.data)
+            }
+        })
     }
 
     updateArticle(article: Article): Promise<void> {
-        const stmt = this.#db.prepare("UPDATE articles SET title = ?, body = ?, author_id = ?, book_id = ?, chapter_order = ?, love = ? WHERE id = ?");
-        stmt.bind([article.title, article.body, article.author_id, article.book_id, article.chapter_order, String(article.love), article.id!]);
-        stmt.step();
+        worker.postMessage({ type: 'updateArticle', article: article });
         return new Promise<void>((resolve) => {
-            resolve();
-        });
+            worker.onmessage = (event: { data: void }) => {
+                resolve(event.data)
+            }
+        })
     }
 
     deleteArticle(id: number): Promise<void> {
-        const stmt = this.#db.prepare("DELETE FROM articles WHERE id = ?");
-        stmt.bind([id]);
-        stmt.step();
+        worker.postMessage({ type: 'deleteArticle', id: id });
         return new Promise<void>((resolve) => {
-            resolve();
-        });
+            worker.onmessage = (event: { data: void }) => {
+                resolve(event.data)
+            }
+        })
 
     }
 

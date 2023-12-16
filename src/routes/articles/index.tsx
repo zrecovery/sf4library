@@ -19,7 +19,7 @@ export default function ArticlesList() {
   createEffect(async () => {
     const response = await services?.articleService.getArticles({
       page: currentPage(),
-      size: 10,
+      size: 4,
       keywords: searchkeywords(),
       love: love(),
     });

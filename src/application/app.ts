@@ -7,13 +7,9 @@ import { ArticleFetchReposirory } from "~/infrastructure/repository/fetch/articl
 import { AuthorFetchRepository } from "~/infrastructure/repository/fetch/author.fetch.repository";
 import { BookFetchRepository } from "~/infrastructure/repository/fetch/book.fetch.repository";
 import { ArticleSqliteRepository } from "~/infrastructure/repository/sqlite/article.sqlite.repository";
-import sqlite3InitModule from '@sqlite.org/sqlite-wasm';
-import { BookSqliteRepository } from "~/infrastructure/repository/sqlite/book.sqlite.repository";
-import { AuthorSqliteRepository } from "~/infrastructure/repository/sqlite/author.sqlite.repository";
+import { BookMockRepository } from "~/infrastructure/repository/mock/book.mock.repository";
+import { AuthorMockRepository } from "~/infrastructure/repository/mock/author.mock.repository";
 
-const sqlite = sqlite3InitModule().then((sqlite3) => {
-   return sqlite3;
-});
 
 export const createRepository = <T extends Repository>(
   devRepository: T,
@@ -21,17 +17,17 @@ export const createRepository = <T extends Repository>(
 ) => (process.env.NODE_ENV === "development" ? devRepository : prodRepository);
 console.log(process.env.NODE_ENV);
 export const articleRepository: ArticleReposirory = createRepository(
-  new ArticleSqliteRepository(await sqlite),
+  new ArticleSqliteRepository(),
   new ArticleFetchReposirory(),
 );
 
 export const bookRepository = createRepository(
-  new BookSqliteRepository(await sqlite),
+  new BookMockRepository(),
   new BookFetchRepository(),
 );
 
 export const authorRepository = createRepository(
-  new AuthorSqliteRepository(await sqlite),
+  new AuthorMockRepository(),
   new AuthorFetchRepository(),
 );
 

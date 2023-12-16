@@ -21,7 +21,7 @@ export default function AuthorList() {
     services?.authorService
       .getAuthors({
         page: currentPage(),
-        size: 10,
+        size: 4,
       })
       .then((res) => {
         setAuthors(res.detail);
