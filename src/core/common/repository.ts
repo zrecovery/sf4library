@@ -1,3 +1,3 @@
 export interface Repository {
-    setting(config: object): Promise<void>;
+  setting(config: object): Promise<void>;
 }
