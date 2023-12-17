@@ -1,45 +1,44 @@
-import { Database } from "@sqlite.org/sqlite-wasm";
 import { Author } from "~/core/authors/author.model";
 import { AuthorRepository, QueryParams } from "~/core/authors/author.repository";
 import { Book } from "~/core/books/book.model";
 import { QueryResult } from "~/core/dto/query-result.model";
 
+const worker = new Worker(new URL('./author.sqlite.worker.ts', import.meta.url), { type: 'module' });
+
 export class AuthorSqliteRepository implements AuthorRepository {
-    #db: Database
-    constructor(db: Database) {
-        this.#db = db
+    constructor() { }
+
+    async setting(config: object): Promise<void> {
+        const buffer = (config as { buffer: ArrayBuffer }).buffer;
+        worker.postMessage({ type: 'setting', buffer: buffer });
+        return Promise.resolve();
     }
 
+
     getAuthors(query: QueryParams): Promise<QueryResult<Author[]>> {
-        const stmt1 = this.#db.prepare('SELECT count(id) FROM authors');
-        stmt1.step();
-        const total = Math.ceil(Number(stmt1.get({})['count(id)']) / query.size!);
-        const stmt2 = this.#db.prepare('SELECT id, name FROM authors LIMIT ? OFFSET ?')
-        stmt2.bind([query.size!, query.page! * query.size! - query.size!]);
-        const authors: Author[] = [];
-        while (stmt2.step()) {
-            authors.push(stmt2.get({}) as unknown as Author);
-        }
         return new Promise<QueryResult<Author[]>>((resolve) => {
-            resolve({
-                detail: authors,
-                page: total,
-                size: query.size!,
-                current_page: query.page!
-            })
-        })
+            const onMessage = (event: { data: { type: string, result: QueryResult<Author[]> } }) => {
+                console.log("getAuthors", event.data)
+                if (event.data.type === "getAuthors") {
+                    resolve(event.data.result);
+                }
+            };
+            worker.onmessage = onMessage;
+            worker.postMessage({ type: 'getAuthors', query: query });
+        });
+
     }
 
     getAuthor(id: number): Promise<Book[]> {
-        const stmt = this.#db.prepare('SELECT * FROM books WHERE author_id = ?');
-        stmt.bind([id]);
-        const books: Book[] = [];
-        while (stmt.step()) {
-            books.push(stmt.get({}) as unknown as Book);
-        }
         return new Promise<Book[]>((resolve) => {
-            resolve(books)
-        })
+            const onMessage = (event: { data: { type: string, result: Book[] } }) => {
+                if (event.data.type === "getAuthor") {
+                    resolve(event.data.result);
+                }
+            };
+            worker.onmessage = onMessage;
+            worker.postMessage({ type: 'getAuthor', id: id });
+        });
     }
 
 }

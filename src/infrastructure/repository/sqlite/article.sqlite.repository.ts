@@ -9,6 +9,12 @@ export class ArticleSqliteRepository implements ArticleReposirory {
 
     constructor() {}
 
+    async setting(config: object): Promise<void> {
+        const buffer = (config as { buffer: ArrayBuffer }).buffer;
+        worker.postMessage({ type: 'setting', buffer: buffer });
+        return Promise.resolve();
+      }
+
     async getArticles(query: QueryParams): Promise<QueryResult<Article[]>> {
         return new Promise<QueryResult<Article[]>>((resolve) => {
             const onMessage = (event: { data: { type: string, result: QueryResult<Article[]> } }) => {
@@ -26,7 +32,7 @@ export class ArticleSqliteRepository implements ArticleReposirory {
         worker.postMessage({ type: 'getArticle', id: id });
         return new Promise<Article>((resolve) => {
             worker.onmessage = (event: { data: Article }) => {
-                resolve(event.data)
+                resolve(event.data.result)
             }
         })
     }

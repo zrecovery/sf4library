@@ -5,6 +5,10 @@ import { Config } from "~/infrastructure/config";
 import { QueryResult } from "~/core/dto/query-result.model";
 
 export class BookFetchRepository implements BookRepository {
+  setting(config: object): Promise<void> {
+    console.log("no need to setting");
+    return Promise.resolve();
+  }
   async getBooks(page: number, size: number): Promise<QueryResult<Book[]>> {
     return fetch(
       `${Config.ServerRootUrl}/books?page=${page}&size=${size}`,

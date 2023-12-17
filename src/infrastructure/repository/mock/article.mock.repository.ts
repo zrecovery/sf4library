@@ -7,6 +7,10 @@ import { QueryResult } from "~/core/dto/query-result.model";
 import { testArticle } from "./test.model";
 
 export class ArticleMockRepository implements ArticleReposirory {
+  setting(config: object): Promise<void> {
+    console.log("no need to setting");
+    return Promise.resolve();
+  }
   getArticles(query: QueryParams): Promise<QueryResult<Article[]>> {
     const articles: Article[] = [testArticle];
     return new Promise<QueryResult<Article[]>>((resolve) => {

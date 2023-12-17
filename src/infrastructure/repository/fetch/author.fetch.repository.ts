@@ -9,6 +9,10 @@ import { QueryResult } from "~/core/dto/query-result.model";
 import { objectToQueryParams } from "~/utils/query-params.util";
 
 export class AuthorFetchRepository implements AuthorRepository {
+  setting(config: object): Promise<void> {
+    console.log("no need to setting");
+    return Promise.resolve();
+  }
   async getAuthor(id: number): Promise<Book[]> {
     const response = await fetch(`${Config.ServerRootUrl}/authors/${id}`);
     if (!response.ok) {

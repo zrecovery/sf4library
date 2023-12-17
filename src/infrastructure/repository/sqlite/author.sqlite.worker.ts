@@ -1,14 +1,25 @@
 /// <reference lib="webworker" />
-import { Database } from "@sqlite.org/sqlite-wasm";
+import sqlite3WasmInit, { Database, OpfsDatabase } from "@sqlite.org/sqlite-wasm";
 import { Author } from "~/core/authors/author.model";
 import { AuthorRepository, QueryParams } from "~/core/authors/author.repository";
 import { Book } from "~/core/books/book.model";
 import { QueryResult } from "~/core/dto/query-result.model";
 
+
 export class AuthorSqliteRepository implements AuthorRepository {
+    #db: OpfsDatabase;
     constructor(db: Database) {
         this.#db = db
     }
+
+    async setting(config: object): Promise<void> {
+        const buffer = (config as { buffer: ArrayBuffer }).buffer;
+        const sqlite3 = await sqlite3WasmInit();
+        const resultCode = await sqlite3.oo1.OpfsDb.importDb("test.db", buffer);
+        this.#db = this.#db.checkRc(resultCode);
+        return Promise.resolve();
+    }
+
 
     getAuthors(query: QueryParams): Promise<QueryResult<Author[]>> {
         const stmt1 = this.#db.prepare('SELECT count(id) FROM authors');
@@ -43,3 +54,29 @@ export class AuthorSqliteRepository implements AuthorRepository {
     }
 
 }
+const sqlite3 = await sqlite3WasmInit();
+const db = new sqlite3.oo1.OpfsDb("test.db", "ct");
+const authorSqliteWorker = new AuthorSqliteRepository(db);
+self.onmessage = async (event) => {
+    switch (event.data.type) {
+        case 'setting':
+            authorSqliteWorker.setting(event.data);
+            break;
+        case 'getAuthors':
+            authorSqliteWorker.getAuthors(event.data.query)
+                .then(result => {
+                    self.postMessage({ type: 'getAuthors', result: result })
+                });
+            break;
+        case 'getAuthor':
+            authorSqliteWorker.getAuthor(event.data.id)
+                .then(result => {
+                    self.postMessage({ type: 'getAuthor', result: result })
+                });
+            break;
+        default:
+            self.postMessage({ type: 'error', message: 'Unknown message type' });
+    }
+
+}
+

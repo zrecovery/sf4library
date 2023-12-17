@@ -8,6 +8,10 @@ import { QueryResult } from "~/core/dto/query-result.model";
 import { testAuthor, testBook } from "./test.model";
 
 export class AuthorMockRepository implements AuthorRepository {
+  setting(config: object): Promise<void> {
+    console.log("no need to setting");
+    return Promise.resolve();
+  }
   getAuthors(query: QueryParams): Promise<QueryResult<Author[]>> {
     return new Promise<QueryResult<Author[]>>((resolve) => {
       resolve({

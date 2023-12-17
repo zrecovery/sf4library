@@ -13,6 +13,14 @@ export class ArticleSqliteRepository implements ArticleReposirory {
         this.#db = db
     }
 
+    async setting(config: object): Promise<void> {
+        const buffer = (config as { buffer: ArrayBuffer }).buffer;
+        const sqlite3 = await sqlite3WasmInit();
+        const resultCode = await sqlite3.oo1.OpfsDb.importDb("test.db",buffer);
+        this.#db = this.#db.checkRc(resultCode);
+        return Promise.resolve();
+    }
+
     getArticles(query: QueryParams): Promise<QueryResult<Article[]>> {
         const condition = `${query.keywords ? "WHERE body match ?" : ""}`
         const stmt = this.#db.prepare(`SELECT count(rowid) FROM articles_fts ${condition};`);
@@ -97,6 +105,9 @@ const db = new sqlite3.oo1.OpfsDb("test.db","ct");
 const articleSqliteWorker = new ArticleSqliteRepository(db);
 self.onmessage = async (event) => {
     switch (event.data.type) {
+        case 'setting':
+            articleSqliteWorker.setting(event.data);
+            break;
         case 'getArticles':
             articleSqliteWorker.getArticles(event.data.query)
                 .then(result => {

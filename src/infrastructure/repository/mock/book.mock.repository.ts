@@ -4,6 +4,10 @@ import { QueryResult } from "~/core/dto/query-result.model";
 import { testArticle, testBook } from "./test.model";
 
 export class BookMockRepository {
+  setting(config: object): Promise<void> {
+    console.log("no need to setting");
+    return Promise.resolve();
+  }
   getBooks(page: number, size: number): Promise<QueryResult<Book[]>> {
     return new Promise<QueryResult<Book[]>>((resolve) => {
       resolve({

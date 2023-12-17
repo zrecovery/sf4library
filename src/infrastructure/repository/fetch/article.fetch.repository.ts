@@ -8,6 +8,10 @@ import { Config } from "~/infrastructure/config";
 import { objectToQueryParams } from "~/utils/query-params.util";
 
 export class ArticleFetchReposirory implements ArticleReposirory {
+  setting(config: object): Promise<void> {
+    console.log("no need to setting");
+    return Promise.resolve();
+  }
   async getArticles(query: QueryParams): Promise<QueryResult<Article[]>> {
     const queryParams = objectToQueryParams(query);
     const response = await fetch(

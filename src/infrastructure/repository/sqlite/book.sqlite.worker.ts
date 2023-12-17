@@ -1,5 +1,5 @@
 /// <reference lib="webworker" />
-import { Database } from "@sqlite.org/sqlite-wasm";
+import sqlite3WasmInit, { OpfsDatabase } from "@sqlite.org/sqlite-wasm";
 import { Article } from "~/core/articles/article.model";
 import { Book } from "~/core/books/book.model";
 import { BookRepository } from "~/core/books/book.repository";
@@ -10,9 +10,17 @@ const ArticleFullJoinTable = '((chapters JOIN books ON chapters.book_id = books.
 
 
 export class BookSqliteRepository implements BookRepository {
-    #db: Database
-    constructor(db: Database) {
+    #db: OpfsDatabase
+    constructor(db: OpfsDatabase) {
         this.#db = db
+    }
+
+    async setting(config: object): Promise<void> {
+        const buffer = (config as { buffer: ArrayBuffer }).buffer;
+        const sqlite3 = await sqlite3WasmInit();
+        const resultCode = await sqlite3.oo1.OpfsDb.importDb("test.db", buffer);
+        this.#db = this.#db.checkRc(resultCode);
+        return Promise.resolve();
     }
 
     getBooks(page: number, size: number): Promise<QueryResult<Book[]>> {
@@ -59,3 +67,29 @@ export class BookSqliteRepository implements BookRepository {
     }
 
 }
+const sqlite3 = await sqlite3WasmInit();
+const db = new sqlite3.oo1.OpfsDb("test.db", "ct");
+const bookSqliteWorker = new BookSqliteRepository(db);
+self.onmessage = async (event) => {
+    switch (event.data.type) {
+        case 'setting':
+            bookSqliteWorker.setting(event.data);
+            break;
+        case 'getBooks':
+            bookSqliteWorker.getBooks(event.data.query.page, event.data.query.size)
+                .then(result => {
+                    self.postMessage({ type: 'getBooks', result: result })
+                });
+            break;
+        case 'getBook':
+            bookSqliteWorker.getBook(event.data.query.id, event.data.query.page, event.data.query.size)
+                .then(result => {
+                    self.postMessage({ type: 'getBook', result: result })
+                });
+            break;
+        default:
+            self.postMessage({ type: 'error', message: 'Unknown message type' });
+    }
+
+}
+
