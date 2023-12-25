@@ -1,24 +1,28 @@
 /// <reference lib="dom" />
 import { Title } from "solid-start";
 import { useService } from "./store/service";
+import { createSignal } from "solid-js";
 
 export default function Home() {
-  let uploadInputElement: HTMLInputElement;
+  let uploadInputElement: HTMLInputElement | undefined;
+  const [message, setMessage] = createSignal("Hello World!");
   const services = useService();
   const upload = () => {
-    if (uploadInputElement.files) {
+    setMessage("Start");
+    if (uploadInputElement?.files) {
       const file = uploadInputElement.files[0];
       const reader = new FileReader();
       reader.readAsArrayBuffer(file);
       reader.onloadend = () => {
         services?.setting({ buffer: reader.result as ArrayBuffer });
+        setMessage("End");
       };
     }
   };
   return (
     <main>
       <Title>欢迎</Title>
-      <h1>Hello World2</h1>
+      <h1>{message()}</h1>
       <input type="file" ref={uploadInputElement} />
       <button type="button" onClick={upload}>
         上传

@@ -1,4 +1,3 @@
-/// <reference lib="webworker" />
 import { Article } from "~/core/articles/article.model";
 import {
   ArticleReposirory,
@@ -6,13 +5,19 @@ import {
 } from "~/core/articles/article.repository";
 import { QueryResult } from "~/core/dto/query-result.model";
 import sqlite3WasmInit, { OpfsDatabase } from "@sqlite.org/sqlite-wasm";
+import { AuthorRepository } from "~/core/authors/author.repository";
+import { Author } from "~/core/authors/author.model";
+import { Book } from "~/core/books/book.model";
+import { BookRepository } from "~/core/books/book.repository";
 
 const ArticleColumn =
   "articles.id, articles.title, articles.body, authors.name as author, books.title as book, chapters.chapter_order, articles.love, chapters.book_id, authors.id as author_id ";
 const ArticleFullJoinTable =
-  "((articles JOIN chapters ON chapters.article_id = articles.id) JOIN books ON chapters.book_id = books.id) JOIN authors ON authors.id = books.author_id WHERE articles.id";
+  "((articles JOIN chapters ON chapters.article_id = articles.id) JOIN books ON chapters.book_id = books.id) JOIN authors ON authors.id = books.author_id ";
 
-export class ArticleSqliteRepository implements ArticleReposirory {
+export class LibrarySqliteRepository
+  implements ArticleReposirory, AuthorRepository, BookRepository
+{
   #db: OpfsDatabase;
   constructor(db: OpfsDatabase) {
     this.#db = db;
@@ -20,9 +25,15 @@ export class ArticleSqliteRepository implements ArticleReposirory {
 
   async setting(config: object): Promise<void> {
     const buffer = (config as { buffer: ArrayBuffer }).buffer;
+    const deleteAllFiles = async function () {
+      const direct = await navigator.storage.getDirectory();
+      for await (const [name] of direct)
+        await direct.removeEntry(name, { recursive: true });
+    };
+    await deleteAllFiles();
     const sqlite3 = await sqlite3WasmInit();
     const resultCode = await sqlite3.oo1.OpfsDb.importDb("test.db", buffer);
-    this.#db = this.#db.checkRc(resultCode);
+    this.#db.checkRc(resultCode);
     return Promise.resolve();
   }
 
@@ -55,7 +66,7 @@ export class ArticleSqliteRepository implements ArticleReposirory {
     const IdQuery = `(${"?, ".repeat(query.size! - 1)}?) `;
 
     const stmt3 = this.#db.prepare(
-      `SELECT ${ArticleColumn} FROM ${ArticleFullJoinTable} in ${IdQuery}`,
+      `SELECT ${ArticleColumn} FROM ${ArticleFullJoinTable} WHERE articles.id in ${IdQuery}`,
     );
     stmt3.bind(ids);
     while (stmt3.step()) {
@@ -128,36 +139,89 @@ export class ArticleSqliteRepository implements ArticleReposirory {
       resolve();
     });
   }
-}
 
-const sqlite3 = await sqlite3WasmInit();
-const db = new sqlite3.oo1.OpfsDb("test.db", "ct");
-const articleSqliteWorker = new ArticleSqliteRepository(db);
-self.onmessage = async (event) => {
-  switch (event.data.type) {
-    case "setting":
-      articleSqliteWorker.setting(event.data);
-      break;
-    case "getArticles":
-      articleSqliteWorker.getArticles(event.data.query).then((result) => {
-        self.postMessage({ type: "getArticles", result: result });
+  getAuthors(query: QueryParams): Promise<QueryResult<Author[]>> {
+    const stmt1 = this.#db.prepare("SELECT count(id) FROM authors");
+    stmt1.step();
+    const total = Math.ceil(Number(stmt1.get({})["count(id)"]) / query.size!);
+    const stmt2 = this.#db.prepare(
+      "SELECT id, name FROM authors LIMIT ? OFFSET ?",
+    );
+    stmt2.bind([query.size!, query.page! * query.size! - query.size!]);
+    const authors: Author[] = [];
+    while (stmt2.step()) {
+      authors.push(stmt2.get({}) as unknown as Author);
+    }
+    return new Promise<QueryResult<Author[]>>((resolve) => {
+      resolve({
+        detail: authors,
+        page: total,
+        size: query.size!,
+        current_page: query.page!,
       });
-      break;
-    case "getArticle":
-      articleSqliteWorker.getArticle(event.data.id).then((result) => {
-        self.postMessage({ type: "getArticle", result: result });
-      });
-      break;
-    case "createArticle":
-      articleSqliteWorker.createArticle(event.data.article);
-      break;
-    case "updateArticle":
-      articleSqliteWorker.updateArticle(event.data.article);
-      break;
-    case "deleteArticle":
-      articleSqliteWorker.deleteArticle(event.data.id);
-      break;
-    default:
-      self.postMessage({ type: "error", message: "Unknown message type" });
+    });
   }
-};
+
+  getAuthor(id: number): Promise<Book[]> {
+    const stmt = this.#db.prepare("SELECT * FROM books WHERE author_id = ?");
+    stmt.bind([id]);
+    const books: Book[] = [];
+    while (stmt.step()) {
+      books.push(stmt.get({}) as unknown as Book);
+    }
+    return new Promise<Book[]>((resolve) => {
+      resolve(books);
+    });
+  }
+
+  getBooks(page: number, size: number): Promise<QueryResult<Book[]>> {
+    const stmt1 = this.#db.prepare("SELECT count(id) FROM books");
+    stmt1.step();
+    const total = Math.ceil(Number(stmt1.get({})["count(id)"]) / size);
+    const stmt = this.#db.prepare(
+      "SELECT id, title FROM books LIMIT ? OFFSET ?",
+    );
+    stmt.bind([size, page * size - size]);
+    const books: Book[] = [];
+    while (stmt.step()) {
+      books.push(stmt.get({}) as unknown as Book);
+    }
+    return new Promise<QueryResult<Book[]>>((resolve) => {
+      resolve({
+        detail: books,
+        page: total,
+        size: size,
+        current_page: page,
+      });
+    });
+  }
+
+  getBook(
+    id: number,
+    page: number,
+    size: number,
+  ): Promise<QueryResult<Article[]>> {
+    const stmt1 = this.#db.prepare(
+      "SELECT count(id) FROM chapters WHERE book_id = ?",
+    );
+    stmt1.bind([id]);
+    stmt1.step();
+    const total = Math.ceil(Number(stmt1.get({})["count(id)"]) / size);
+    const stmt = this.#db.prepare(
+      `SELECT ${ArticleColumn} FROM ${ArticleFullJoinTable} WHERE chapters.book_id = ? LIMIT ? OFFSET ?`,
+    );
+    stmt.bind([id, size, page * size - size]);
+    const articles: Article[] = [];
+    while (stmt.step()) {
+      articles.push(stmt.get({}) as unknown as Article);
+    }
+    return new Promise<QueryResult<Article[]>>((resolve) => {
+      resolve({
+        detail: articles,
+        page: total,
+        size: size,
+        current_page: page,
+      });
+    });
+  }
+}

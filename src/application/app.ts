@@ -6,27 +6,28 @@ import { Repository } from "~/core/common/repository";
 import { ArticleFetchReposirory } from "~/infrastructure/repository/fetch/article.fetch.repository";
 import { AuthorFetchRepository } from "~/infrastructure/repository/fetch/author.fetch.repository";
 import { BookFetchRepository } from "~/infrastructure/repository/fetch/book.fetch.repository";
-import { ArticleSqliteRepository } from "~/infrastructure/repository/sqlite/article.sqlite.repository";
-import { AuthorSqliteRepository } from "~/infrastructure/repository/sqlite/author.sqlite.repository";
-import { BookSqliteRepository } from "~/infrastructure/repository/sqlite/book.sqlite.repository";
+import { SqliteRepository } from "~/infrastructure/repository/sqlite/sqlite.reposotory";
 
 export const createRepository = <T extends Repository>(
   devRepository: T,
   prodRepository: T,
 ) => (process.env.NODE_ENV === "development" ? devRepository : prodRepository);
 console.log(process.env.NODE_ENV);
+
+const sqliteRepository = new SqliteRepository();
+
 export const articleRepository: ArticleReposirory = createRepository(
-  new ArticleSqliteRepository(),
+  sqliteRepository,
   new ArticleFetchReposirory(),
 );
 
 export const bookRepository = createRepository(
-  new BookSqliteRepository(),
+  sqliteRepository,
   new BookFetchRepository(),
 );
 
 export const authorRepository = createRepository(
-  new AuthorSqliteRepository(),
+  sqliteRepository,
   new AuthorFetchRepository(),
 );
 
