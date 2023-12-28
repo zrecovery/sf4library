@@ -2,7 +2,7 @@ import { createSignal, Match, Show, Switch } from "solid-js";
 import { ArticleReader } from "~/components/ArticleReader";
 import { Button } from "@suid/material";
 import { Article } from "~/core/articles/article.model";
-import { useParams } from "solid-start";
+import { useParams } from "@solidjs/router";
 import { ArticleEditor } from "~/components/ArticleEditor";
 import { useService } from "../store/service";
 

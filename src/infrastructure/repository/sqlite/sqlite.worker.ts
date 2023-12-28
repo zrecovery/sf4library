@@ -12,7 +12,7 @@ self.onmessage = async (event) => {
   const sqlite3 = await sqlite3WasmInit();
   const db = new sqlite3.oo1.OpfsDb("file:test.db?vfs=opfs", "ct");
   const librarySqliteWorker = new LibrarySqliteRepository(db);
-  
+
   switch (event.data.type) {
     case "setting":
       librarySqliteWorker.setting(event.data);

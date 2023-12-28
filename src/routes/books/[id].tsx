@@ -1,11 +1,12 @@
 import { List } from "@suid/material";
 import { createEffect, createSignal, For, Show } from "solid-js";
 import ArticleRow from "../../components/ArticleRow";
-import { useParams } from "solid-start";
+
 import { Article } from "~/core/articles/article.model";
 import { Pagination } from "~/components/Pagination";
 
 import { useService } from "../store/service";
+import { useParams } from "@solidjs/router";
 
 export default function BookDetail() {
   const services = useService();

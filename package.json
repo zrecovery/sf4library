@@ -1,9 +1,9 @@
 {
   "name": "sf4library",
   "scripts": {
-    "dev": "solid-start dev",
-    "build": "solid-start build",
-    "start": "solid-start start",
+    "dev": "vinxi dev",
+    "build": "vinxi build",
+    "start": "bun ./.output/server/index.mjs",
     "format": "prettier --write src",
     "lint": "eslint src/**/*.ts"
   },
@@ -14,14 +14,13 @@
     "@unocss/preset-uno": "^0.57.7",
     "bun-types": "^1.0.14",
     "prettier": "^3.0.3",
-    "solid-start-node": "^0.3.9",
     "typescript": "^5.2.2",
-    "vite": "^5.0.10",
     "vite-plugin-solid-styled": "^0.8.3"
   },
   "dependencies": {
-    "@solidjs/meta": "^0.29.1",
-    "@solidjs/router": "^0.8.3",
+    "@solidjs/meta": "^0.29.2",
+    "@solidjs/router": "^0.10.5",
+    "@solidjs/start": "^0.4.2",
     "@sqlite.org/sqlite-wasm": "^3.44.2-build1",
     "@suid/icons-material": "^0.6.11",
     "@suid/material": "^0.15.1",
@@ -32,12 +31,12 @@
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-solid": "^0.13.0",
     "is-what": "^4.1.16",
-    "solid-js": "^1.8.5",
-    "solid-start": "^0.3.9",
-    "solid-start-bun": "^0.3.10",
+    "solid-js": "^1.8.7",
     "solid-styled": "^0.8.2",
     "solid-testing-library": "^0.5.1",
     "unocss": "^0.57.7",
+    "vinxi": "0.0.54",
+    "vite": "latest",
     "vite-plugin-solid": "^2.7.2"
   }
 }

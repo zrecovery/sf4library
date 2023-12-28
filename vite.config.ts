@@ -1,14 +1,13 @@
-import { defineConfig } from 'vite';
-import solid from "solid-start/vite";
+import { defineConfig } from "@solidjs/start/config";
 import suidPlugin from "@suid/vite-plugin";
 import solidStyled from "vite-plugin-solid-styled";
 import unocssPlugin from "unocss/vite";
 
 export default defineConfig({
+    start: { ssr: false },
     plugins: [
         unocssPlugin(),
         suidPlugin(),
-        solid({ ssr: false }),
         solidStyled({
             filter: {
                 include: "src/**/*.tsx",
@@ -18,13 +17,13 @@ export default defineConfig({
         {
             name: "isolation",
             configureServer(server) {
-              server.middlewares.use((_req, res, next) => {
-                res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
-                res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
-                next();
-              });
+                server.middlewares.use((_req, res, next) => {
+                    res.setHeader("Cross-Origin-Opener-Policy", "same-origin");
+                    res.setHeader("Cross-Origin-Embedder-Policy", "require-corp");
+                    next();
+                });
             },
-          },
+        },
     ],
     build: {
         sourcemap: true

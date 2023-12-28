@@ -1,6 +1,6 @@
-import { A } from "solid-start";
 import { AppBar, Box, Button, IconButton, Toolbar } from "@suid/material";
 import ArrowBackIosNewIcon from "@suid/icons-material/ArrowBackIosNew";
+import { A } from "@solidjs/router";
 
 export default function Navbar() {
   return (

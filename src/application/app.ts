@@ -18,17 +18,17 @@ const sqliteRepository = new SqliteRepository();
 
 export const articleRepository: ArticleReposirory = createRepository(
   sqliteRepository,
-  new ArticleFetchReposirory(),
+  sqliteRepository,
 );
 
 export const bookRepository = createRepository(
   sqliteRepository,
-  new BookFetchRepository(),
+  sqliteRepository,
 );
 
 export const authorRepository = createRepository(
   sqliteRepository,
-  new AuthorFetchRepository(),
+  sqliteRepository,
 );
 
 export const articleService = new ArticleService(articleRepository);

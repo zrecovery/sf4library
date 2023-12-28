@@ -1,4 +1,4 @@
-import { useNavigate } from "solid-start";
+import { useNavigate } from "@solidjs/router";
 import { Article } from "../core/articles/article.model";
 import { Box, Typography } from "@suid/material";
 

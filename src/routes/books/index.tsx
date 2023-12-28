@@ -1,11 +1,12 @@
 import { List, ListItem, ListItemButton } from "@suid/material";
 import { createEffect, createSignal, For } from "solid-js";
-import { useNavigate, useSearchParams } from "solid-start";
+
 import { Pagination } from "../../components/Pagination";
 import { Book } from "~/core/books/book.model";
 
 import { QueryResult } from "~/core/dto/query-result.model";
 import { useService } from "../store/service";
+import { useSearchParams, useNavigate } from "@solidjs/router";
 
 export default function BooksList() {
   const [searchParams] = useSearchParams();

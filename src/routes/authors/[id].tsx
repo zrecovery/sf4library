@@ -1,6 +1,6 @@
 import { List, ListItem, ListItemButton } from "@suid/material";
 import { For, createEffect, createSignal } from "solid-js";
-import { useNavigate, useParams } from "solid-start";
+import { useNavigate, useParams } from "@solidjs/router";
 import { useService } from "../store/service";
 import { Book } from "~/core/books/book.model";
 

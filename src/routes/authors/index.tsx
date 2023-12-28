@@ -2,8 +2,8 @@ import { List, ListItem, ListItemButton } from "@suid/material";
 import { createEffect, createSignal, For } from "solid-js";
 import { Pagination } from "~/components/Pagination";
 import { Author } from "~/core/authors/author.model";
-import { useNavigate, useSearchParams } from "solid-start";
 import { useService } from "../store/service";
+import { useNavigate, useSearchParams } from "@solidjs/router";
 
 export default function AuthorList() {
   const navigate = useNavigate();

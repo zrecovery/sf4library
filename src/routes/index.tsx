@@ -1,5 +1,6 @@
 /// <reference lib="dom" />
-import { Title } from "solid-start";
+
+import { Title } from "@solidjs/meta";
 import { useService } from "./store/service";
 import { createSignal } from "solid-js";
 

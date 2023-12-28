@@ -9,8 +9,9 @@ import {
 } from "@suid/material";
 import { Accessor, createSignal, Setter, Show } from "solid-js";
 import { Favorite, FavoriteBorder } from "@suid/icons-material";
-import { A } from "solid-start";
+
 import { useService } from "~/routes/store/service";
+import { A } from "@solidjs/router";
 
 type ArticleRowProps = {
   article: Article;
