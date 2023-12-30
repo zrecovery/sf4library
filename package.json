@@ -34,6 +34,7 @@
     "eslint-plugin-solid": "^0.13.0",
     "is-what": "^4.1.16",
     "solid-js": "^1.8.7",
+    "solid-start-vercel": "^0.3.10",
     "solid-styled": "^0.8.2",
     "solid-testing-library": "^0.5.1",
     "unocss": "^0.57.7",
