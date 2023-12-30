@@ -8,6 +8,7 @@
     "lint": "eslint src/**/*.ts"
   },
   "type": "module",
+  "workspaces": ["packages/*"],
   "devDependencies": {
     "@types/babel__core": "^7.20.1",
     "@unocss/eslint-config": "^0.57.7",
@@ -27,6 +28,7 @@
     "@suid/vite-plugin": "^0.1.5",
     "@types/sharedworker": "^0.0.110",
     "@typescript-eslint/parser": "^6.13.1",
+    "@vinxi/devtools": "^0.0.5",
     "eslint": "^8.54.0",
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-solid": "^0.13.0",
@@ -35,7 +37,7 @@
     "solid-styled": "^0.8.2",
     "solid-testing-library": "^0.5.1",
     "unocss": "^0.57.7",
-    "vinxi": "0.0.54",
+    "vinxi": "workspace:*",
     "vite": "latest",
     "vite-plugin-solid": "^2.7.2"
   }
