@@ -2,6 +2,7 @@ import { defineConfig } from "@solidjs/start/config";
 import suidPlugin from "@suid/vite-plugin";
 import solidStyled from "vite-plugin-solid-styled";
 import unocssPlugin from "unocss/vite";
+import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
     start: {
@@ -11,6 +12,28 @@ export default defineConfig({
         }
     },
     plugins: [
+        VitePWA({
+            injectRegister: 'auto',
+            registerType: 'autoUpdate',
+            base: "/",
+            workbox: {
+                globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+            },
+            manifest: {
+                "name": "zrLib",
+                "icons": [
+                    {
+                        "src": "icons/512.png",
+                        "type": "image/png",
+                        "sizes": "512x512"
+                    }
+                ],
+                "start_url": "./",
+                "scope": "./",
+                "background_color": "#fff",
+                "theme_color": "#fff"
+            }
+        }),
         unocssPlugin(),
         suidPlugin(),
         solidStyled({

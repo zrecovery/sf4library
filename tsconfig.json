@@ -12,7 +12,8 @@
     "paths": {
       "~/*": [
         "./src/*"
-      ]
+      ],
+      "vite": ["node_modules/vite"]
     },
     "types": [
       "bun-types",
@@ -23,6 +24,7 @@
       "dom",
       "webworker"
     ],
+    "preserveSymlinks": true,
     "sourceMap": true
   }
 }
