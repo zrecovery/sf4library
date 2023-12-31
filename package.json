@@ -2,7 +2,7 @@
   "name": "sf4library",
   "scripts": {
     "dev": "vinxi dev",
-    "build": "vinxi build",
+    "build": "NITRO_PRESET=vercel vinxi build",
     "start": "bun ./.output/server/index.mjs",
     "format": "prettier --write src",
     "lint": "eslint src/**/*.ts"

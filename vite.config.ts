@@ -7,7 +7,7 @@ export default defineConfig({
     start: {
         ssr: false,
         server: {
-            preset: "vercel-edge"
+            preset: "vercel"
         }
     },
     plugins: [
