@@ -2,13 +2,12 @@ import { defineConfig } from "@solidjs/start/config";
 import suidPlugin from "@suid/vite-plugin";
 import solidStyled from "vite-plugin-solid-styled";
 import unocssPlugin from "unocss/vite";
-import vercel from "solid-start-vercel";
 
 export default defineConfig({
     start: {
         ssr: false,
         server: {
-            preset: "vercel"
+            preset: "vercel-edge"
         }
     },
     plugins: [

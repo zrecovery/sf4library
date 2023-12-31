@@ -1,6 +1,5 @@
 import { createHandler, StartServer } from "@solidjs/start/server";
 import "uno.css";
-import Navbar from "./components/Navbar";
 
 export default createHandler(() => (
   <StartServer
