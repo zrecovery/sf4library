@@ -4,7 +4,7 @@ import {
   QueryParams,
 } from "~/core/articles/article.repository";
 import { QueryResult } from "~/core/dto/query-result.model";
-import sqlite3WasmInit, { OpfsDatabase } from "@sqlite.org/sqlite-wasm";
+import { OpfsDatabase } from "@sqlite.org/sqlite-wasm";
 import { AuthorRepository } from "~/core/authors/author.repository";
 import { Author } from "~/core/authors/author.model";
 import { Book } from "~/core/books/book.model";
@@ -24,16 +24,14 @@ export class LibrarySqliteRepository
   }
 
   async setting(config: object): Promise<void> {
-    const buffer = (config as { buffer: ArrayBuffer }).buffer;
+    const context = (config as { context: string }).context;
     const deleteAllFiles = async function () {
       const direct = await navigator.storage.getDirectory();
       for await (const [name] of direct)
         await direct.removeEntry(name, { recursive: true });
     };
     await deleteAllFiles();
-    const sqlite3 = await sqlite3WasmInit();
-    const resultCode = await sqlite3.oo1.OpfsDb.importDb("test.db", buffer);
-    this.#db.checkRc(resultCode);
+    this.#db.exec(context);
     return Promise.resolve();
   }
 

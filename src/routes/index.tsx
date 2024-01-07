@@ -13,9 +13,9 @@ export default function Home() {
     if (uploadInputElement?.files) {
       const file = uploadInputElement.files[0];
       const reader = new FileReader();
-      reader.readAsArrayBuffer(file);
+      reader.readAsText(file);
       reader.onloadend = () => {
-        services?.setting({ buffer: reader.result as ArrayBuffer });
+        services?.setting({ buffer: reader.result as string });
         setMessage("End");
       };
     }

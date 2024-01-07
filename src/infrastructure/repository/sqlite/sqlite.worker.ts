@@ -1,13 +1,7 @@
 /// <reference lib="webworker" />
 import sqlite3WasmInit from "@sqlite.org/sqlite-wasm";
 import { LibrarySqliteRepository } from "./library.sqlite.repository";
-/*
-let librarySqliteWorker: LibrarySqliteRepository;
-sqlite3WasmInit().then((sqlite3) => {
-  const db = new sqlite3.oo1.OpfsDb("file:test.db?vfs=opfs", "ct");
-  librarySqliteWorker = new LibrarySqliteRepository(db);
-});
-*/
+
 self.onmessage = async (event) => {
   const sqlite3 = await sqlite3WasmInit();
   const db = new sqlite3.oo1.OpfsDb("file:test.db?vfs=opfs", "ct");

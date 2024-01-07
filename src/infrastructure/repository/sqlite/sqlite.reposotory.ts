@@ -18,8 +18,8 @@ export class SqliteRepository
   constructor() {}
 
   async setting(config: object): Promise<void> {
-    const buffer = (config as { buffer: ArrayBuffer }).buffer;
-    worker.postMessage({ type: "setting", buffer: buffer });
+    const context = (config as { context: string }).context;
+    worker.postMessage({ type: "setting", context: context });
     return Promise.resolve();
   }
 
