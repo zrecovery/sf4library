@@ -15,7 +15,7 @@ export default function Home() {
       const reader = new FileReader();
       reader.readAsText(file);
       reader.onloadend = () => {
-        services?.setting({ buffer: reader.result as string });
+        services?.setting({ context: reader.result as string });
         setMessage("End");
       };
     }

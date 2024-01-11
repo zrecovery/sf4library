@@ -4,7 +4,7 @@ import {
   QueryParams,
 } from "~/core/articles/article.repository";
 import { QueryResult } from "~/core/dto/query-result.model";
-import { OpfsDatabase } from "@sqlite.org/sqlite-wasm";
+import sqlite3Wasm, { OpfsDatabase } from "@sqlite.org/sqlite-wasm";
 import { AuthorRepository } from "~/core/authors/author.repository";
 import { Author } from "~/core/authors/author.model";
 import { Book } from "~/core/books/book.model";
@@ -31,8 +31,16 @@ export class LibrarySqliteRepository
         await direct.removeEntry(name, { recursive: true });
     };
     await deleteAllFiles();
+    const sqlite3 = await sqlite3Wasm();
+    this.#db = new sqlite3.oo1.OpfsDb("test3.db", "ct");
     this.#db.exec(context);
-    return Promise.resolve();
+    this.#db.exec(
+      "CREATE VIRTUAL TABLE articles_fts USING fts5(title, body,love UNINDEXED, content='articles', content_rowid='id');",
+    );
+    this.#db.exec(
+      "INSERT INTO articles_fts(rowid, title, body, love) SELECT id, title, body, love FROM articles;",
+    );
+    return Promise.resolve("success");
   }
 
   getArticles(query: QueryParams): Promise<QueryResult<Article[]>> {

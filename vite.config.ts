@@ -1,40 +1,19 @@
-import { defineConfig } from "@solidjs/start/config";
+import { defineConfig } from 'vite'
 import suidPlugin from "@suid/vite-plugin";
 import solidStyled from "vite-plugin-solid-styled";
+import solidPlugin from 'vite-plugin-solid';
 import unocssPlugin from "unocss/vite";
-import { VitePWA } from 'vite-plugin-pwa';
+import presetUno from '@unocss/preset-uno'
+import * as path from 'path';
 
 export default defineConfig({
-    start: {
-        ssr: false,
-        server: {
-            preset: "vercel"
-        }
-    },
     plugins: [
-        VitePWA({
-            injectRegister: 'auto',
-            registerType: 'autoUpdate',
-            base: "/",
-            workbox: {
-                globPatterns: ['**/*.{js,css,html,ico,png,svg}']
-            },
-            manifest: {
-                "name": "zrLib",
-                "icons": [
-                    {
-                        "src": "icons/512.png",
-                        "type": "image/png",
-                        "sizes": "512x512"
-                    }
-                ],
-                "start_url": "./",
-                "scope": "./",
-                "background_color": "#fff",
-                "theme_color": "#fff"
-            }
+        unocssPlugin({
+            presets: [
+                presetUno(),
+            ]
         }),
-        unocssPlugin(),
+        solidPlugin(),
         suidPlugin(),
         solidStyled({
             filter: {
@@ -64,6 +43,11 @@ export default defineConfig({
     },
     optimizeDeps: {
         exclude: ['@sqlite.org/sqlite-wasm'],
+    },
+    resolve: {
+        alias: [
+            { find: '~', replacement: path.resolve(__dirname, 'src') },
+        ],
     },
 });
 

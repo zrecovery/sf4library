@@ -1,4 +1,4 @@
-import { services } from "~/application/app";
+import { services } from "../../application/app";
 import { ServiceContext } from "./service";
 import { JSX } from "solid-js";
 

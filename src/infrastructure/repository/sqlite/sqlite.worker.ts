@@ -4,10 +4,13 @@ import { LibrarySqliteRepository } from "./library.sqlite.repository";
 
 self.onmessage = async (event) => {
   const sqlite3 = await sqlite3WasmInit();
-  const db = new sqlite3.oo1.OpfsDb("file:test.db?vfs=opfs", "ct");
+  const db = new sqlite3.oo1.OpfsDb("file:test3.db?vfs=opfs", "ct");
   const librarySqliteWorker = new LibrarySqliteRepository(db);
 
   switch (event.data.type) {
+    case "debug":
+      librarySqliteWorker.debug(event.data.sql);
+      break;
     case "setting":
       librarySqliteWorker.setting(event.data);
       break;

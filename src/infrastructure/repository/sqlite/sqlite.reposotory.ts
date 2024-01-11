@@ -20,6 +20,10 @@ export class SqliteRepository
   async setting(config: object): Promise<void> {
     const context = (config as { context: string }).context;
     worker.postMessage({ type: "setting", context: context });
+    const onMessage = (event: { data: { type: string; result: unknown } }) => {
+      console.log("setting", event.data);
+    };
+    worker.onmessage = onMessage;
     return Promise.resolve();
   }
 

@@ -1,14 +1,13 @@
 {
   "name": "sf4library",
   "scripts": {
-    "dev": "vinxi dev",
-    "build": "NITRO_PRESET=vercel vinxi build",
-    "start": "bun ./.output/server/index.mjs",
+    "dev": "vite dev",
+    "build": "vite build",
+    "start": "vite start",
     "format": "prettier --write src",
     "lint": "eslint src/**/*.ts"
   },
   "type": "module",
-  "workspaces": ["packages/*"],
   "devDependencies": {
     "@types/babel__core": "^7.20.1",
     "@unocss/eslint-config": "^0.57.7",
@@ -16,7 +15,6 @@
     "bun-types": "^1.0.14",
     "prettier": "^3.0.3",
     "typescript": "^5.2.2",
-    "vite-plugin-pwa": "^0.17.4",
     "vite-plugin-solid-styled": "^0.8.3"
   },
   "dependencies": {
@@ -39,7 +37,6 @@
     "solid-styled": "^0.8.2",
     "solid-testing-library": "^0.5.1",
     "unocss": "^0.57.7",
-    "vinxi": "workspace:*",
     "vite": "latest",
     "vite-plugin-solid": "^2.7.2"
   }
