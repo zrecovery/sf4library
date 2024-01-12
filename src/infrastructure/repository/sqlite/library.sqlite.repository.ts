@@ -25,21 +25,27 @@ export class LibrarySqliteRepository
 
   async setting(config: object): Promise<void> {
     const context = (config as { context: string }).context;
-    const deleteAllFiles = async function () {
-      const direct = await navigator.storage.getDirectory();
-      for await (const [name] of direct)
-        await direct.removeEntry(name, { recursive: true });
-    };
-    await deleteAllFiles();
+    if (config.op === "init") {
+      const deleteAllFiles = async function () {
+        const direct = await navigator.storage.getDirectory();
+        for await (const [name] of direct)
+          await direct.removeEntry(name, { recursive: true });
+      };
+      await deleteAllFiles();
+    }
     const sqlite3 = await sqlite3Wasm();
-    this.#db = new sqlite3.oo1.OpfsDb("test3.db", "ct");
-    this.#db.exec(context);
-    this.#db.exec(
-      "CREATE VIRTUAL TABLE articles_fts USING fts5(title, body,love UNINDEXED, content='articles', content_rowid='id');",
-    );
-    this.#db.exec(
-      "INSERT INTO articles_fts(rowid, title, body, love) SELECT id, title, body, love FROM articles;",
-    );
+    this.#db = new sqlite3.oo1.OpfsDb("library.db", "c");
+    if (config.op === "file") {
+      this.#db.exec(context);
+    }
+    if (config.op === "finish") {
+      this.#db.exec(
+        "CREATE VIRTUAL TABLE articles_fts USING fts5(title, body,love UNINDEXED, content='articles', content_rowid='id');",
+      );
+      this.#db.exec(
+        "INSERT INTO articles_fts(rowid, title, body, love) SELECT id, title, body, love FROM articles;",
+      );
+    }
     return Promise.resolve("success");
   }
 
