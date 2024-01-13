@@ -35,6 +35,7 @@
     "solid-testing-library": "^0.5.1",
     "unocss": "^0.57.7",
     "vite": "latest",
-    "vite-plugin-solid": "^2.7.2"
+    "vite-plugin-solid": "^2.7.2",
+    "vite-plugin-vercel": "^2.0.0"
   }
 }
