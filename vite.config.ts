@@ -4,12 +4,10 @@ import solidStyled from "vite-plugin-solid-styled";
 import solidPlugin from 'vite-plugin-solid';
 import unocssPlugin from "unocss/vite";
 import presetUno from '@unocss/preset-uno'
-import vercel from 'vite-plugin-vercel';
 import * as path from 'path';
 
 export default defineConfig({
     plugins: [
-        vercel(),
         unocssPlugin({
             presets: [
                 presetUno(),

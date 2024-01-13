@@ -2,7 +2,7 @@
   "name": "sf4library",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
+    "build": "./node_modules/.bin/vite build",
     "start": "./node_modules/.bin/vite start",
     "format": "prettier --write src",
     "lint": "eslint src/**/*.ts"
