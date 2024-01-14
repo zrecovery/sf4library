@@ -2,37 +2,64 @@
 
 import { Title } from "@solidjs/meta";
 import { useService } from "./store/service";
-import { createSignal } from "solid-js";
+import { Show, createSignal } from "solid-js";
+import { Box, Button, FormControl, InputLabel, MenuItem, Select } from "@suid/material";
+import { SelectChangeEvent } from "@suid/material/Select";
 
 export default function Home() {
-  let uploadInputElement: HTMLInputElement | undefined;
-  const [message, setMessage] = createSignal("Hello World!");
-  const services = useService();
-  const [opmode, setOpMode] = createSignal("init");
-  const upload = () => {
-    setMessage("Start");
-    if (uploadInputElement?.files) {
-      const file = uploadInputElement.files[0];
-      const reader = new FileReader();
-      reader.readAsText(file);
-      reader.onloadend = () => {
-        services?.setting({ context: reader.result as string, op: opmode });
-        setMessage("End");
-      };
-    }
-  };
-  return (
-    <main>
-      <Title>欢迎</Title>
-      <h1>{message()}</h1>
-      <h1>模式：{opmode()}</h1>
-      <button onClick={() => setOpMode("init")}>Init</button>
-      <button onClick={() => setOpMode("file")}>File</button>
-      <button onClick={() => setOpMode("finish")}>Finish</button>
-      <input type="file" ref={uploadInputElement} />
-      <button type="button" onClick={upload}>
-        上传
-      </button>
-    </main>
-  );
+    let uploadInputElement: HTMLInputElement | undefined;
+    const [message, setMessage] = createSignal("Hello World!");
+    const services = useService();
+    const [opmode, setOpMode] = createSignal("init");
+    const upload = () => {
+        setMessage("Start");
+        if (opmode() === "file") {
+            if (uploadInputElement?.files) {
+                const file = uploadInputElement.files[0];
+                const reader = new FileReader();
+                reader.readAsText(file);
+                reader.onloadend = () => {
+                    services?.setting({ context: reader.result as string, op: opmode() });
+                    setMessage("End");
+                };
+            }
+        } else {
+            console.log(opmode());
+            services?.setting({ op: opmode() });
+            setMessage("End");
+        }
+    };
+
+    const handleChange = (event: SelectChangeEvent) => {
+        setOpMode(event.target.value);
+    };
+
+    return (
+        <main>
+            <Title>欢迎</Title>
+            <h1>{message()}</h1>
+            <Box sx={{ minWidth: 120 }}>
+                <FormControl fullWidth>
+                    <InputLabel id="opmode-select-label">操作模式</InputLabel>
+                    <Select
+                        labelId="opmode-select-label"
+                        id="opmode-select"
+                        value={opmode()}
+                        label="opMode"
+                        onChange={handleChange}
+                    >
+                        <MenuItem value={"init"}>初始化</MenuItem>
+                        <MenuItem value={"file"}>上传</MenuItem>
+                        <MenuItem value={"finish"}>生成索引</MenuItem>
+                    </Select>
+                </FormControl>
+            </Box>
+            <Show when={opmode() === "file"}>
+                <input type="file" ref={uploadInputElement} />
+            </Show>
+            <Button onClick={upload}>
+                提交
+            </Button>
+        </main>
+    );
 }
