@@ -3,18 +3,11 @@
 import { Title } from "@solidjs/meta";
 import { useService } from "./store/service";
 import { Show, createSignal } from "solid-js";
-import {
-  Box,
-  Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-} from "@suid/material";
+import { Box, Button, FormControl, InputLabel } from "@suid/material";
 import { SelectChangeEvent } from "@suid/material/Select";
 
 export default function Home() {
-  let uploadInputElement: HTMLInputElement | undefined;
+  let uploadInputElement: undefined;
   const [message, setMessage] = createSignal("Hello World!");
   const services = useService();
   const [opmode, setOpMode] = createSignal("init");
@@ -31,7 +24,6 @@ export default function Home() {
         };
       }
     } else {
-      console.log(opmode());
       services?.setting({ op: opmode() });
       setMessage("End");
     }
@@ -46,19 +38,14 @@ export default function Home() {
       <Title>欢迎</Title>
       <h1>{message()}</h1>
       <Box sx={{ minWidth: 120 }}>
-        <FormControl fullWidth>
+        <FormControl>
+          <h1>{opmode()}</h1>
           <InputLabel id="opmode-select-label">操作模式</InputLabel>
-          <Select
-            labelId="opmode-select-label"
-            id="opmode-select"
-            value={opmode()}
-            label="opMode"
-            onChange={handleChange}
-          >
-            <MenuItem value={"init"}>初始化</MenuItem>
-            <MenuItem value={"file"}>上传</MenuItem>
-            <MenuItem value={"finish"}>生成索引</MenuItem>
-          </Select>
+          <select onChange={handleChange}>
+            <option value="init">初始化</option>
+            <option value="file">上传</option>
+            <option value="finish">生成索引</option>
+          </select>
         </FormControl>
       </Box>
       <Show when={opmode() === "file"}>
