@@ -1,3 +1,3 @@
 export interface Repository {
-    setting(config: object): Promise<unknown>;
+  setting(config: object): Promise<unknown>;
 }

@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "vite dev",
     "build": "./node_modules/.bin/vite build",
-    "start": "./node_modules/.bin/vite start",
+    "preview": "./node_modules/.bin/vite preview",
     "format": "prettier --write src",
     "lint": "eslint src/**/*.ts"
   },
