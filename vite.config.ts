@@ -4,10 +4,17 @@ import solidStyled from "vite-plugin-solid-styled";
 import solidPlugin from 'vite-plugin-solid';
 import unocssPlugin from "unocss/vite";
 import presetUno from '@unocss/preset-uno'
+import { VitePWA } from 'vite-plugin-pwa'
 import * as path from 'path';
 
 export default defineConfig({
     plugins: [
+        VitePWA({
+            registerType: 'autoUpdate',
+            devOptions: {
+                enabled: true
+            }
+        }),
         unocssPlugin({
             presets: [
                 presetUno(),
