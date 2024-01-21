@@ -9,14 +9,9 @@ import type { Book } from "~/core/books/book.model";
 import type { BookRepository } from "~/core/books/book.repository";
 import type { QueryResult } from "~/core/dto/query-result.model";
 
-const worker =
-  Bun.env.NODE_ENV === "production"
-    ? new Worker(new URL("./sqlite.worker.ts", import.meta.url), {
-        type: "module",
-      })
-    : new Worker(new URL("./sqlite.worker.ts", import.meta.url), {
-        type: "classic",
-      });
+const worker = new Worker(new URL("./sqlite.worker.ts", import.meta.url), {
+  type: "module",
+});
 
 export class SqliteRepository
   implements ArticleReposirory, AuthorRepository, BookRepository
