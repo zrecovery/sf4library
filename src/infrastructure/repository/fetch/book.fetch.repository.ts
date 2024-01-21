@@ -1,8 +1,8 @@
-import { Article } from "~/core/articles/article.model";
-import { Book } from "~/core/books/book.model";
-import { BookRepository } from "~/core/books/book.repository";
+import type { Article } from "~/core/articles/article.model";
+import type { Book } from "~/core/books/book.model";
+import type { BookRepository } from "~/core/books/book.repository";
 import { Config } from "~/infrastructure/config";
-import { QueryResult } from "~/core/dto/query-result.model";
+import type { QueryResult } from "~/core/dto/query-result.model";
 
 export class BookFetchRepository implements BookRepository {
   setting(config: object): Promise<void> {

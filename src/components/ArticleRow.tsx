@@ -1,4 +1,4 @@
-import { Article } from "../core/articles/article.model";
+import type { Article } from "../core/articles/article.model";
 import {
   ListItem,
   ListItemText,
@@ -7,7 +7,7 @@ import {
   Divider,
   Box,
 } from "@suid/material";
-import { Accessor, createSignal, Setter, Show } from "solid-js";
+import { type Accessor, createSignal, type Setter, Show } from "solid-js";
 import { Favorite, FavoriteBorder } from "@suid/icons-material";
 
 import { useService } from "~/routes/store/service";

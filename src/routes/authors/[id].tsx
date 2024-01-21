@@ -2,7 +2,7 @@ import { List, ListItem, ListItemButton } from "@suid/material";
 import { For, createEffect, createSignal } from "solid-js";
 import { useNavigate, useParams } from "@solidjs/router";
 import { useService } from "../store/service";
-import { Book } from "~/core/books/book.model";
+import type { Book } from "~/core/books/book.model";
 
 export default function AuthorDetail() {
   const navigate = useNavigate();

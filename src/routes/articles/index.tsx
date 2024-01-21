@@ -1,9 +1,9 @@
 import { createEffect, createSignal, For, Show } from "solid-js";
 import { ArticleRow } from "~/components/ArticleRow";
 import { Pagination } from "~/components/Pagination";
-import { Article } from "~/core/articles/article.model";
+import type { Article } from "~/core/articles/article.model";
 import { Button, List, TextField, Switch } from "@suid/material";
-import { QueryResult } from "~/core/dto/query-result.model";
+import type { QueryResult } from "~/core/dto/query-result.model";
 import { useService } from "../store/service";
 
 export default function ArticlesList() {

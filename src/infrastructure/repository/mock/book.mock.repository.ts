@@ -1,6 +1,6 @@
-import { Article } from "~/core/articles/article.model";
-import { Book } from "~/core/books/book.model";
-import { QueryResult } from "~/core/dto/query-result.model";
+import type { Article } from "~/core/articles/article.model";
+import type { Book } from "~/core/books/book.model";
+import type { QueryResult } from "~/core/dto/query-result.model";
 import { testArticle, testBook } from "./test.model";
 
 export class BookMockRepository {

@@ -1,7 +1,7 @@
-import { QueryResult } from "~/core/dto/query-result.model";
-import { Author } from "./author.model";
-import { Repository } from "../common/repository";
-import { Book } from "../books/book.model";
+import type { QueryResult } from "~/core/dto/query-result.model";
+import type { Author } from "./author.model";
+import type { Repository } from "../common/repository";
+import type { Book } from "../books/book.model";
 
 export interface QueryParams {
   page?: number;

@@ -1,13 +1,13 @@
-import { Article } from "~/core/articles/article.model";
-import {
+import type { Article } from "~/core/articles/article.model";
+import type {
   ArticleReposirory,
   QueryParams,
 } from "~/core/articles/article.repository";
-import { Author } from "~/core/authors/author.model";
-import { AuthorRepository } from "~/core/authors/author.repository";
-import { Book } from "~/core/books/book.model";
-import { BookRepository } from "~/core/books/book.repository";
-import { QueryResult } from "~/core/dto/query-result.model";
+import type { Author } from "~/core/authors/author.model";
+import type { AuthorRepository } from "~/core/authors/author.repository";
+import type { Book } from "~/core/books/book.model";
+import type { BookRepository } from "~/core/books/book.repository";
+import type { QueryResult } from "~/core/dto/query-result.model";
 import SqliteWorker from "./sqlite.worker.ts?worker";
 
 const worker = new SqliteWorker();
@@ -18,6 +18,7 @@ export class SqliteRepository
   constructor() {}
 
   async setting(config: object): Promise<string> {
+    let result = "设置不成功"
     const context = (config as { context: string }).context;
     const op = (config as { op: string }).op;
     if (context) {
@@ -26,11 +27,12 @@ export class SqliteRepository
       worker.postMessage({ type: "setting", op: op });
     }
     const onMessage = (event: { data: { type: string; result: string } }) => {
-      console.log(event.data);
-      return event.data.result;
+      result = event.data.result;
+      console.log(event.data.result)
     };
     worker.onmessage = onMessage;
-    return "";
+    console.log(result)
+    return result;
   }
 
   async getArticles(query: QueryParams): Promise<QueryResult<Article[]>> {

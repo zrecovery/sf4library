@@ -1,7 +1,7 @@
-import { QueryResult } from "~/core/dto/query-result.model";
-import { Article } from "../articles/article.model";
-import { Book } from "./book.model";
-import { Repository } from "../common/repository";
+import type { QueryResult } from "~/core/dto/query-result.model";
+import type { Article } from "../articles/article.model";
+import type { Book } from "./book.model";
+import type { Repository } from "../common/repository";
 
 export interface BookRepository extends Repository {
   getBooks(page: number, size: number): Promise<QueryResult<Book[]>>;

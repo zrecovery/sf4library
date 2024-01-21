@@ -41,6 +41,11 @@ export default function Navbar() {
               新建
             </A>
           </Button>
+          <Button color="inherit">
+            <A class="text-white decoration-none" href="/setting">
+              设置
+            </A>
+          </Button>
         </Box>
       </Toolbar>
     </AppBar>

@@ -1,7 +1,7 @@
-import { Article } from "~/core/articles/article.model";
-import { Book } from "~/core/books/book.model";
-import { BookRepository } from "./book.repository";
-import { QueryResult } from "~/core/dto/query-result.model";
+import type { Article } from "~/core/articles/article.model";
+import type { Book } from "~/core/books/book.model";
+import type { BookRepository } from "./book.repository";
+import type { QueryResult } from "~/core/dto/query-result.model";
 import { Service } from "../common/service";
 
 export class BookService implements Service {

@@ -1,11 +1,11 @@
-import { Author } from "~/core/authors/author.model";
-import {
+import type { Author } from "~/core/authors/author.model";
+import type {
   AuthorRepository,
   QueryParams,
 } from "~/core/authors/author.repository";
-import { Book } from "~/core/books/book.model";
+import type { Book } from "~/core/books/book.model";
 import { Config } from "~/infrastructure/config";
-import { QueryResult } from "~/core/dto/query-result.model";
+import type { QueryResult } from "~/core/dto/query-result.model";
 import { objectToQueryParams } from "~/utils/query-params.util";
 
 export class AuthorFetchRepository implements AuthorRepository {

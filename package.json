@@ -15,8 +15,7 @@
     "bun-types": "^1.0.14",
     "prettier": "^3.0.3",
     "typescript": "^5.2.2",
-    "vite-plugin-pwa": "^0.17.4",
-    "vite-plugin-solid-styled": "^0.8.3"
+    "vite-plugin-pwa": "^0.17.4"
   },
   "dependencies": {
     "@solidjs/meta": "^0.29.2",
@@ -32,11 +31,10 @@
     "eslint-plugin-solid": "^0.13.0",
     "is-what": "^4.1.16",
     "solid-js": "^1.8.7",
-    "solid-styled": "^0.8.2",
     "solid-testing-library": "^0.5.1",
     "unocss": "^0.57.7",
     "vite": "^5.0.11",
     "vite-plugin-solid": "^2.7.2",
-    "vite-plugin-vercel": "^2.0.0"
+    "vite-plugin-vercel": "^3.0.0"
   }
 }

@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite'
 import suidPlugin from "@suid/vite-plugin";
-import solidStyled from "vite-plugin-solid-styled";
 import solidPlugin from 'vite-plugin-solid';
 import unocssPlugin from "unocss/vite";
 import presetUno from '@unocss/preset-uno'
@@ -22,12 +21,6 @@ export default defineConfig({
         }),
         solidPlugin(),
         suidPlugin(),
-        solidStyled({
-            filter: {
-                include: "src/**/*.tsx",
-                exclude: "node_modules/**/*.{ts,js}",
-            }
-        }),
         {
             name: "isolation",
             configureServer(server) {

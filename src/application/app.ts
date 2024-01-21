@@ -1,11 +1,8 @@
-import { ArticleReposirory } from "~/core/articles/article.repository";
+import type { ArticleReposirory } from "~/core/articles/article.repository";
 import { ArticleService } from "~/core/articles/article.service";
 import { AuthorService } from "~/core/authors/author.service";
 import { BookService } from "~/core/books/book.service";
-import { Repository } from "~/core/common/repository";
-import { ArticleFetchReposirory } from "~/infrastructure/repository/fetch/article.fetch.repository";
-import { AuthorFetchRepository } from "~/infrastructure/repository/fetch/author.fetch.repository";
-import { BookFetchRepository } from "~/infrastructure/repository/fetch/book.fetch.repository";
+import type { Repository } from "~/core/common/repository";
 import { SqliteRepository } from "~/infrastructure/repository/sqlite/sqlite.reposotory";
 
 export const createRepository = <T extends Repository>(

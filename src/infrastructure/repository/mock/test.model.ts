@@ -1,6 +1,6 @@
-import { Article } from "~/core/articles/article.model";
-import { Author } from "~/core/authors/author.model";
-import { Book } from "~/core/books/book.model";
+import type { Article } from "~/core/articles/article.model";
+import type { Author } from "~/core/authors/author.model";
+import type { Book } from "~/core/books/book.model";
 
 export const testArticle: Article = {
   id: 1,

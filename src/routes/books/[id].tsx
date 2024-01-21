@@ -2,7 +2,7 @@ import { List } from "@suid/material";
 import { createEffect, createSignal, For, Show } from "solid-js";
 import ArticleRow from "../../components/ArticleRow";
 
-import { Article } from "~/core/articles/article.model";
+import type { Article } from "~/core/articles/article.model";
 import { Pagination } from "~/components/Pagination";
 
 import { useService } from "../store/service";

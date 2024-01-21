@@ -7,7 +7,7 @@ interface ContextService {
   articleService: ArticleService;
   bookService: BookService;
   authorService: AuthorService;
-  setting: (config: object) => Promise<void>;
+  setting: (config: object) => Promise<unknown>;
 }
 export const ServiceContext = createContext<ContextService>();
 

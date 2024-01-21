@@ -1,6 +1,6 @@
-import { Article } from "~/core/articles/article.model";
-import { QueryResult } from "~/core/dto/query-result.model";
-import { ArticleReposirory, QueryParams } from "./article.repository";
+import type { Article } from "~/core/articles/article.model";
+import type { QueryResult } from "~/core/dto/query-result.model";
+import type { ArticleReposirory, QueryParams } from "./article.repository";
 import { Service } from "../common/service";
 
 export class ArticleService implements Service {

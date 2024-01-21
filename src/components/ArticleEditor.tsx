@@ -5,9 +5,9 @@ import {
   FormHelperText,
   TextField,
 } from "@suid/material";
-import { EventParam } from "@suid/types/events";
-import { Accessor, Setter } from "solid-js";
-import { Article } from "~/core/articles/article.model";
+import type { EventParam } from "@suid/types/events";
+import type { Accessor, Setter } from "solid-js";
+import type { Article } from "~/core/articles/article.model";
 
 export function ArticleEditor(props: {
   article: Accessor<Article>;

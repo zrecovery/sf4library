@@ -1,7 +1,7 @@
-import { Author } from "~/core/authors/author.model";
-import { AuthorRepository, QueryParams } from "./author.repository";
-import { QueryResult } from "~/core/dto/query-result.model";
-import { Book } from "../books/book.model";
+import type { Author } from "~/core/authors/author.model";
+import type { AuthorRepository, QueryParams } from "./author.repository";
+import type { QueryResult } from "~/core/dto/query-result.model";
+import type { Book } from "../books/book.model";
 import { Service } from "../common/service";
 
 export class AuthorService implements Service {

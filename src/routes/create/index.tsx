@@ -2,7 +2,7 @@ import { Button } from "@suid/material";
 import { createSignal } from "solid-js";
 import { ArticleEditor } from "~/components/ArticleEditor";
 import { Config } from "~/infrastructure/config";
-import { Article } from "~/core/articles/article.model";
+import type { Article } from "~/core/articles/article.model";
 
 export default function Create() {
   const [article, setArticle] = createSignal<Article>({

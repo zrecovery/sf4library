@@ -1,5 +1,5 @@
 import { Box, Button } from "@suid/material";
-import { Accessor, Setter } from "solid-js";
+import type { Accessor, Setter } from "solid-js";
 
 interface PaginationProps {
   currentPage: Accessor<number>;

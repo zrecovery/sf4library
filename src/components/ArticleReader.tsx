@@ -1,5 +1,5 @@
 import { useNavigate } from "@solidjs/router";
-import { Article } from "../core/articles/article.model";
+import type { Article } from "../core/articles/article.model";
 import { Box, Typography } from "@suid/material";
 
 interface ArticleReaderProps {

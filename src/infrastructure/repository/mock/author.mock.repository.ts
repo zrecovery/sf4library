@@ -1,10 +1,10 @@
-import { Author } from "~/core/authors/author.model";
-import {
+import type { Author } from "~/core/authors/author.model";
+import type {
   AuthorRepository,
   QueryParams,
 } from "~/core/authors/author.repository";
-import { Book } from "~/core/books/book.model";
-import { QueryResult } from "~/core/dto/query-result.model";
+import type { Book } from "~/core/books/book.model";
+import type { QueryResult } from "~/core/dto/query-result.model";
 import { testAuthor, testBook } from "./test.model";
 
 export class AuthorMockRepository implements AuthorRepository {

@@ -1,14 +1,14 @@
-import { Article } from "~/core/articles/article.model";
-import {
+import type { Article } from "~/core/articles/article.model";
+import type {
   ArticleReposirory,
   QueryParams,
 } from "~/core/articles/article.repository";
-import { QueryResult } from "~/core/dto/query-result.model";
-import sqlite3Wasm, { OpfsDatabase } from "@sqlite.org/sqlite-wasm";
-import { AuthorRepository } from "~/core/authors/author.repository";
-import { Author } from "~/core/authors/author.model";
-import { Book } from "~/core/books/book.model";
-import { BookRepository } from "~/core/books/book.repository";
+import type { QueryResult } from "~/core/dto/query-result.model";
+import sqlite3Wasm, { type OpfsDatabase } from "@sqlite.org/sqlite-wasm";
+import type { AuthorRepository } from "~/core/authors/author.repository";
+import type { Author } from "~/core/authors/author.model";
+import type { Book } from "~/core/books/book.model";
+import type { BookRepository } from "~/core/books/book.repository";
 
 const ArticleColumn =
   "articles.id, articles.title, articles.body, authors.name as author, books.title as book, chapters.chapter_order, articles.love, chapters.book_id, authors.id as author_id ";
@@ -16,37 +16,43 @@ const ArticleFullJoinTable =
   "((articles JOIN chapters ON chapters.article_id = articles.id) JOIN books ON chapters.book_id = books.id) JOIN authors ON authors.id = books.author_id ";
 
 export class LibrarySqliteRepository
-  implements ArticleReposirory, AuthorRepository, BookRepository
-{
+  implements ArticleReposirory, AuthorRepository, BookRepository {
   #db: OpfsDatabase;
   constructor(db: OpfsDatabase) {
     this.#db = db;
   }
 
   async setting(config: object): Promise<string> {
-    const context = (config as { context: string }).context;
-    const op = (config as { op: string }).op;
-
-    // 删除OPFS目录下全部文件，并重新创建新数据库文件.
+    const { context, op } = config as { context: string; op: string };
+  
+    const deleteAllFiles = async () => {
+      try {
+        const directory = await navigator.storage.getDirectory();
+        for await (const [name] of directory) {
+          await directory.removeEntry(name, { recursive: true });
+        }
+      } catch (error) {
+        throw new Error("Error: " + error);
+      }
+    };
+  
     const init = async () => {
-      const deleteAllFiles = async function () {
-        const direct = await navigator.storage.getDirectory();
-        for await (const [name] of direct)
-          await direct.removeEntry(name, { recursive: true });
-      };
       await deleteAllFiles();
       const sqlite3 = await sqlite3Wasm();
-      this.#db = new sqlite3.oo1.OpfsDb("library.db", "c");
-      return "Init success";
+      try {
+        this.#db = new sqlite3.oo1.OpfsDb("library.db", "ct");
+      } catch (error) {
+        throw new Error("Type: " + typeof error);
+      }
+      return "创建成功";
     };
-
-    // 导入SQL文件.
+  
     const inputSqlFile = (ctx: string) => {
-      this.#db.exec(ctx);
-      return "Input success";
-    };
+      const result =this.#db.exec(ctx,{returnValue:"resultRows"});
 
-    // 生成索引.
+      return result;
+    };
+  
     const createFtsIndex = () => {
       this.#db.exec(
         "CREATE VIRTUAL TABLE articles_fts USING fts5(title, body,love UNINDEXED, content='articles', content_rowid='id');",
@@ -54,9 +60,9 @@ export class LibrarySqliteRepository
       this.#db.exec(
         "INSERT INTO articles_fts(rowid, title, body, love) SELECT id, title, body, love FROM articles;",
       );
-      return "Input success";
+      return "创建索引成功";
     };
-
+  
     switch (op) {
       case "init":
         return init();
@@ -65,7 +71,7 @@ export class LibrarySqliteRepository
       case "finish":
         return createFtsIndex();
       default:
-        throw new Error(`超出设计的操作: ${op}`);
+        throw new Error(`Unsupported operation: ${op}`);
     }
   }
 
