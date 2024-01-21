@@ -11,7 +11,7 @@ import { useSearchParams, useNavigate } from "@solidjs/router";
 export default function BooksList() {
   const [searchParams] = useSearchParams();
   const [currentPage, setCurrentPage] = createSignal(
-    Number(searchParams["page"] ?? 1)
+    Number(searchParams["page"] ?? 1),
   );
   const [data, setData] = createSignal<QueryResult<Book[]>>();
   const service = useService();

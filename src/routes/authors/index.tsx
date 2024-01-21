@@ -9,22 +9,21 @@ import type { QueryResult } from "~/core/dto/query-result.model";
 export default function AuthorList() {
   const [searchParams] = useSearchParams();
   const [currentPage, setCurrentPage] = createSignal(
-    Number(searchParams["page"] ?? 1)
+    Number(searchParams["page"] ?? 1),
   );
 
   const [data, setData] = createSignal<QueryResult<Author[]>>();
   const services = useService();
-  
+
   const [page, setPage] = createSignal(1);
 
   createEffect(async () => {
     const res = await services?.authorService.getAuthors({
-        page: currentPage(),
-        size: 4,
-      })
-        setData(res);
-        setPage(res?.page ?? 1);
-
+      page: currentPage(),
+      size: 4,
+    });
+    setData(res);
+    setPage(res?.page ?? 1);
   });
 
   const navigate = useNavigate();

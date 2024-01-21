@@ -5,9 +5,14 @@ import unocssPlugin from "unocss/vite";
 import presetUno from '@unocss/preset-uno'
 import { VitePWA } from 'vite-plugin-pwa'
 import * as path from 'path';
+import topLevelAwait from "vite-plugin-top-level-await";
 
 export default defineConfig({
     plugins: [
+        topLevelAwait({
+            promiseExportName: "__tla",
+            promiseImportName: i => `__tla_${i}`
+          }),
         VitePWA({
             registerType: 'autoUpdate',
             devOptions: {
@@ -33,7 +38,11 @@ export default defineConfig({
         },
     ],
     build: {
-        sourcemap: true
+        sourcemap: true,
+        target: 'esnext',
+    },
+    worker:{
+        format: 'es',
     },
     server: {
         headers: {

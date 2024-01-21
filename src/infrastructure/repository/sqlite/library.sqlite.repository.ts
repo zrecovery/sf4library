@@ -16,7 +16,8 @@ const ArticleFullJoinTable =
   "((articles JOIN chapters ON chapters.article_id = articles.id) JOIN books ON chapters.book_id = books.id) JOIN authors ON authors.id = books.author_id ";
 
 export class LibrarySqliteRepository
-  implements ArticleReposirory, AuthorRepository, BookRepository {
+  implements ArticleReposirory, AuthorRepository, BookRepository
+{
   #db: OpfsDatabase;
   constructor(db: OpfsDatabase) {
     this.#db = db;
@@ -41,7 +42,7 @@ export class LibrarySqliteRepository
       const sqlite3 = await sqlite3Wasm();
       try {
         const poolUtil = await sqlite3.installOpfsSAHPoolVfs();
-        this.#db = new poolUtil.OpfsSAHPoolDb('/library.db');
+        this.#db = new poolUtil.OpfsSAHPoolDb("/library.db");
       } catch (error) {
         throw new Error("Type: " + typeof error);
       }
@@ -50,7 +51,7 @@ export class LibrarySqliteRepository
 
     const inputSqlFile = (ctx: string) => {
       try {
-        this.#db.exec(ctx, { returnValue: "resultRows", rowMode: 'object' });
+        this.#db.exec(ctx, { returnValue: "resultRows", rowMode: "object" });
         return "导入成功";
       } catch (error) {
         throw error;
@@ -92,7 +93,7 @@ export class LibrarySqliteRepository
     while (stmt.step()) {
       const result = stmt.get({});
       total = Math.ceil(
-        Number(result["count(rowid)"]) ?? 10 / query.size! - query.size!
+        Number(result["count(rowid)"]) ?? 10 / query.size! - query.size!,
       );
     }
 
