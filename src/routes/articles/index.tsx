@@ -17,14 +17,16 @@ export default function ArticlesList() {
   const services = useService();
 
   createEffect(async () => {
-    const response = await services?.articleService.getArticles({
-      page: currentPage(),
-      size: 4,
-      keywords: searchkeywords(),
-      love: love(),
-    });
-    setData(response);
-    setPage(response?.page ?? 1);
+    if (searchkeywords() !== "") {
+      const response = await services?.articleService.getArticles({
+        page: currentPage(),
+        size: 4,
+        keywords: searchkeywords(),
+        love: love(),
+      });
+      setData(response);
+      setPage(response?.page ?? 1);
+    }
   });
 
   return (
@@ -39,21 +41,23 @@ export default function ArticlesList() {
           <Switch checked={love()} onChange={(_, value) => setLove(value)} />
           <Button onClick={() => setSearchKeywords(keywords())}>搜索</Button>
         </div>
-        <Show when={data()} fallback={<div>Loading...</div>}>
-          <div class="grid-row-start-2 grid-row-end-8">
-            <List>
-              <For each={data()?.detail}>
-                {(article) => <ArticleRow article={article} />}
-              </For>
-            </List>
-          </div>
-          <div class="grid-row-start-9 grid-row-end-10">
-            <Pagination
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-              totalPage={page}
-            />
-          </div>
+        <Show when={keywords() !== ""}>
+          <Show when={data()} fallback={<div>Loading...</div>}>
+            <div class="grid-row-start-2 grid-row-end-8">
+              <List>
+                <For each={data()?.detail}>
+                  {(article) => <ArticleRow article={article} />}
+                </For>
+              </List>
+            </div>
+            <div class="grid-row-start-9 grid-row-end-10">
+              <Pagination
+                currentPage={currentPage}
+                setCurrentPage={setCurrentPage}
+                totalPage={page}
+              />
+            </div>
+          </Show>
         </Show>
       </div>
     </>

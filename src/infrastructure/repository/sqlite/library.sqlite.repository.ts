@@ -24,7 +24,7 @@ export class LibrarySqliteRepository
 
   async setting(config: object): Promise<string> {
     const { context, op } = config as { context: string; op: string };
-  
+
     const deleteAllFiles = async () => {
       try {
         const directory = await navigator.storage.getDirectory();
@@ -32,27 +32,31 @@ export class LibrarySqliteRepository
           await directory.removeEntry(name, { recursive: true });
         }
       } catch (error) {
-        throw new Error("Error: " + error);
+        throw error;
       }
     };
-  
+
     const init = async () => {
       await deleteAllFiles();
       const sqlite3 = await sqlite3Wasm();
       try {
-        this.#db = new sqlite3.oo1.OpfsDb("library.db", "ct");
+        const poolUtil = await sqlite3.installOpfsSAHPoolVfs();
+        this.#db = new poolUtil.OpfsSAHPoolDb('/library.db');
       } catch (error) {
         throw new Error("Type: " + typeof error);
       }
       return "创建成功";
     };
-  
-    const inputSqlFile = (ctx: string) => {
-      const result =this.#db.exec(ctx,{returnValue:"resultRows"});
 
-      return result;
+    const inputSqlFile = (ctx: string) => {
+      try {
+        this.#db.exec(ctx, { returnValue: "resultRows", rowMode: 'object' });
+        return "导入成功";
+      } catch (error) {
+        throw error;
+      }
     };
-  
+
     const createFtsIndex = () => {
       this.#db.exec(
         "CREATE VIRTUAL TABLE articles_fts USING fts5(title, body,love UNINDEXED, content='articles', content_rowid='id');",
@@ -62,7 +66,7 @@ export class LibrarySqliteRepository
       );
       return "创建索引成功";
     };
-  
+
     switch (op) {
       case "init":
         return init();
@@ -71,7 +75,7 @@ export class LibrarySqliteRepository
       case "finish":
         return createFtsIndex();
       default:
-        throw new Error(`Unsupported operation: ${op}`);
+        throw new Error(`不支持操作： ${op}`);
     }
   }
 
@@ -88,7 +92,7 @@ export class LibrarySqliteRepository
     while (stmt.step()) {
       const result = stmt.get({});
       total = Math.ceil(
-        Number(result["count(rowid)"]) ?? 10 / query.size! - query.size!,
+        Number(result["count(rowid)"]) ?? 10 / query.size! - query.size!
       );
     }
 

@@ -2,10 +2,12 @@
 import sqlite3WasmInit from "@sqlite.org/sqlite-wasm";
 import { LibrarySqliteRepository } from "./library.sqlite.repository";
 
+const sqlite3 = await sqlite3WasmInit();
+const poolUtil = await sqlite3.installOpfsSAHPoolVfs();
+const db = new poolUtil.OpfsSAHPoolDb('/library.db');
+const librarySqliteWorker = new LibrarySqliteRepository(db);
 self.onmessage = async (event) => {
-  const sqlite3 = await sqlite3WasmInit();
-  const db = new sqlite3.oo1.OpfsDb("file:library.db?vfs=opfs", "wt");
-  const librarySqliteWorker = new LibrarySqliteRepository(db);
+
 
   switch (event.data.type) {
     case "setting":
