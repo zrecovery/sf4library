@@ -32,13 +32,12 @@ export const articleService = new ArticleService(articleRepository);
 export const bookService = new BookService(bookRepository);
 export const authorService = new AuthorService(authorRepository);
 
-const setting = async (config: object): Promise<void> => {
-  articleRepository.setting(config);
-  bookRepository.setting(config);
-  authorRepository.setting(config);
-  services.articleService = new ArticleService(articleRepository);
-  services.bookService = new BookService(bookRepository);
-  services.authorService = new AuthorService(authorRepository);
+const setting = async (config: object): Promise<string> => {
+  const result = sqliteRepository.setting(config);
+  services.articleService = new ArticleService(sqliteRepository);
+  services.bookService = new BookService(sqliteRepository);
+  services.authorService = new AuthorService(sqliteRepository);
+  return result;
 };
 
 export const services = {

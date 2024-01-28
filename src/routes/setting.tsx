@@ -28,8 +28,8 @@ export default function Setting() {
       context: fileRaderResult as string,
       op: opmode(),
     });
+    console.log(result);
     const message = await result;
-    console.log(message);
     setMessage(result ? ((await result) as string) : typeof message);
   };
 
@@ -41,8 +41,9 @@ export default function Setting() {
         uploadSqlFile(file, handleUploadSqlFile);
       }
     } else {
-      const result = (await services?.setting({ op: opmode() })) as string;
-      setMessage(result ?? "Undefined");
+      if (services) {
+        services.setting({ op: opmode() }).then((result) => setMessage(result));
+      }
     }
   };
 

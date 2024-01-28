@@ -8,151 +8,346 @@ import type { AuthorRepository } from "~/core/authors/author.repository";
 import type { Book } from "~/core/books/book.model";
 import type { BookRepository } from "~/core/books/book.repository";
 import type { QueryResult } from "~/core/dto/query-result.model";
+import { sqlite3Worker1Promiser } from "@sqlite.org/sqlite-wasm";
+import type {
+  ErrType,
+  ExecResultType,
+  MsgType,
+  OpenResultType,
+  PostMessage,
+} from "./type";
 
-const worker = new Worker(new URL("./sqlite.worker.ts", import.meta.url), {
-  type: "module",
-});
+const ArticleColumn =
+  "articles.id, articles.title, articles.body, authors.name as author, books.title as book, chapters.chapter_order, articles.love, chapters.book_id, authors.id as author_id ";
+const ArticleFullJoinTable =
+  "((articles JOIN chapters ON chapters.article_id = articles.id) JOIN books ON chapters.book_id = books.id) JOIN authors ON authors.id = books.author_id ";
+
+const promiser: <T>(config: PostMessage) => Promise<MsgType<T>> =
+  await new Promise((resolve) => {
+    const _promiser = sqlite3Worker1Promiser({
+      onready: () => {
+        resolve(_promiser);
+      },
+    });
+  });
 
 export class SqliteRepository
   implements ArticleReposirory, AuthorRepository, BookRepository
 {
-  constructor() {}
+  #promiser: <T>(config: PostMessage) => Promise<MsgType<T>>;
+  #dbId?: string;
+  constructor() {
+    this.#promiser = promiser;
+    this.#init({ filename: "library.db" });
+  }
 
-  async setting(config: object): Promise<string> {
-    let result = "设置不成功";
-    const context = (config as { context: string }).context;
-    const op = (config as { op: string }).op;
-    if (context) {
-      worker.postMessage({ type: "setting", op: op, context: context });
-    } else {
-      worker.postMessage({ type: "setting", op: op });
+  async #init(config: { filename: string }): Promise<string> {
+    try {
+      const msg: MsgType<OpenResultType> = await this.#promiser({
+        type: "open",
+        args: {
+          filename: config.filename ?? "library.db",
+          vfs: "opfs",
+        },
+      });
+      this.#dbId = msg.result.dbId;
+      return "初始化成功";
+    } catch (e) {
+      if (!(e instanceof Error)) {
+        const result = (e as ErrType).result;
+        throw new Error(result.message);
+      } else {
+        throw e;
+      }
     }
-    const onMessage = (event: { data: { type: string; result: string } }) => {
-      result = event.data.result;
-      console.log(event);
-    };
-    worker.onmessage = onMessage;
+  }
+
+  #input = async (context: string): Promise<string> => {
+    try {
+      const msg: MsgType<ExecResultType> = await this.#promiser({
+        type: "exec",
+        dbId: this.#dbId,
+        args: { sql: context },
+      });
+      console.log(msg);
+      return "输入成功";
+    } catch (e) {
+      if (!(e instanceof Error)) {
+        const result = (e as ErrType).result;
+        throw new Error(result.message);
+      } else {
+        throw e;
+      }
+    }
+  };
+
+  async setting(config: { op: string; context?: string }): Promise<string> {
+    let result = "";
+    switch (config.op) {
+      case "file":
+        if (config.context) {
+          return this.#input(config.context);
+        }
+        break;
+      default:
+        result = `${config.op}操作失败`;
+        break;
+    }
     return result;
   }
 
-  async getArticles(query: QueryParams): Promise<QueryResult<Article[]>> {
-    return new Promise<QueryResult<Article[]>>((resolve) => {
-      const onMessage = (event: {
-        data: { type: string; result: QueryResult<Article[]> };
-      }) => {
-        console.log("getArticles", event.data);
-        if (event.data.type === "getArticles") {
-          resolve(event.data.result);
-        }
-      };
-      worker.onmessage = onMessage;
-      worker.postMessage({ type: "getArticles", query: query });
-    });
-  }
+  getArticles = async (query: QueryParams): Promise<QueryResult<Article[]>> => {
+    const condition = `${query.keywords ? "WHERE body match ?" : ""}`;
 
-  getArticle(id: number): Promise<Article> {
-    worker.postMessage({ type: "getArticle", id: id });
-    return new Promise<Article>((resolve) => {
-      worker.onmessage = (event: { data: { result: Article } }) => {
-        resolve(event.data.result);
-      };
+    const stmt: MsgType<ExecResultType> = await this.#promiser({
+      type: "exec",
+      dbId: this.#dbId,
+      args: {
+        sql: `SELECT count(rowid) FROM articles_fts ${condition};`,
+        returnValue: "resultRows",
+        rowMode: "object",
+        bind: [`${query.keywords}`],
+      },
     });
-  }
+    let total = 1;
 
-  createArticle(article: Article): Promise<void> {
-    worker.postMessage({ type: "createArticle", article: article });
-    return new Promise<void>((resolve) => {
-      worker.onmessage = (event: { data: void }) => {
-        resolve(event.data);
-      };
+    const result = stmt.result.resultRows[0] as Record<string, string>;
+    total = Math.ceil(
+      Number(result["count(rowid)"]) ?? 10 / query.size! - query.size!,
+    );
+
+    const stmt2: MsgType<ExecResultType> = await this.#promiser({
+      type: "exec",
+      dbId: this.#dbId,
+      args: {
+        sql: "SELECT rowid FROM articles_fts WHERE body like ? ORDER BY rowid DESC LIMIT ? OFFSET ?",
+        returnValue: "resultRows",
+        rowMode: "array",
+        bind: [`%${query.keywords}%`, query.size!, query.page! * query.size!],
+      },
     });
-  }
+    const ids = (stmt2.result.resultRows as number[][]).flatMap((item) => item);
 
-  updateArticle(article: Article): Promise<void> {
-    worker.postMessage({ type: "updateArticle", article: article });
-    return new Promise<void>((resolve) => {
-      worker.onmessage = (event: { data: void }) => {
-        resolve(event.data);
-      };
+    const IdQuery = `(${"?, ".repeat(query.size! - 1)}?) `;
+
+    const stmt3: MsgType<ExecResultType> = await this.#promiser({
+      type: "exec",
+      dbId: this.#dbId,
+      args: {
+        sql: `SELECT ${ArticleColumn} FROM ${ArticleFullJoinTable} WHERE articles.id in ${IdQuery}`,
+        returnValue: "resultRows",
+        rowMode: "object",
+        bind: ids,
+      },
     });
-  }
 
-  deleteArticle(id: number): Promise<void> {
-    worker.postMessage({ type: "deleteArticle", id: id });
-    return new Promise<void>((resolve) => {
-      worker.onmessage = (event: { data: void }) => {
-        resolve(event.data);
-      };
+    const articles = stmt3.result.resultRows as Article[];
+
+    return {
+      detail: articles,
+      page: total,
+      size: query.size!,
+      current_page: query.page!,
+    };
+  };
+
+  getArticle = async (id: number): Promise<Article> => {
+    const stmt: MsgType<ExecResultType> = await this.#promiser({
+      type: "exec",
+      dbId: this.#dbId,
+      args: {
+        sql: `SELECT ${ArticleColumn} FROM ${ArticleFullJoinTable} WHERE articles.id = ?`,
+        returnValue: "resultRows",
+        rowMode: "object",
+        bind: [id],
+      },
     });
-  }
+    const article = stmt.result.resultRows[0] as Article;
+    return article;
+  };
 
-  getAuthors(query: QueryParams): Promise<QueryResult<Author[]>> {
-    return new Promise<QueryResult<Author[]>>((resolve) => {
-      const onMessage = (event: {
-        data: { type: string; result: QueryResult<Author[]> };
-      }) => {
-        console.log("getAuthors", event.data);
-        if (event.data.type === "getAuthors") {
-          resolve(event.data.result);
-        }
-      };
-      worker.onmessage = onMessage;
-      worker.postMessage({ type: "getAuthors", query: query });
+  createArticle = async (article: Article): Promise<void> => {
+    await this.#promiser({
+      type: "exec",
+      dbId: this.#dbId,
+      args: {
+        sql: "INSERT INTO articles (title, body, author_id, book_id, chapter_order, love) VALUES (?, ?, ?, ?, ?, ?)",
+        returnValue: "resultRows",
+        rowMode: "object",
+        bind: [
+          article.title,
+          article.body,
+          article.author_id,
+          article.book_id,
+          article.chapter_order,
+          String(article.love),
+        ],
+      },
     });
-  }
+  };
 
-  getAuthor(id: number): Promise<Book[]> {
-    return new Promise<Book[]>((resolve) => {
-      const onMessage = (event: { data: { type: string; result: Book[] } }) => {
-        if (event.data.type === "getAuthor") {
-          resolve(event.data.result);
-        }
-      };
-      worker.onmessage = onMessage;
-      worker.postMessage({ type: "getAuthor", id: id });
+  updateArticle = async (article: Article): Promise<void> => {
+    await this.#promiser({
+      type: "exec",
+      dbId: this.#dbId,
+      args: {
+        sql: "UPDATE articles SET title = ?, body = ?, author_id = ?, book_id = ?, chapter_order = ?, love = ? WHERE id = ?",
+        returnValue: "resultRows",
+        rowMode: "object",
+        bind: [
+          article.title,
+          article.body,
+          article.author_id,
+          article.book_id,
+          article.chapter_order,
+          String(article.love),
+          article.id!,
+        ],
+      },
     });
-  }
+  };
 
-  getBooks(page: number, size: number): Promise<QueryResult<Book[]>> {
-    return new Promise<QueryResult<Book[]>>((resolve) => {
-      const onMessage = (event: {
-        data: { type: string; result: QueryResult<Book[]> };
-      }) => {
-        if (event.data.type === "getBooks") {
-          resolve(event.data.result);
-        }
-      };
-      worker.onmessage = onMessage;
-      worker.postMessage({
-        type: "getBooks",
-        query: { page: page, size: size },
-      });
+  deleteArticle = async (id: number): Promise<void> => {
+    await this.#promiser({
+      type: "exec",
+      dbId: this.#dbId,
+      args: {
+        sql: "DELETE FROM articles WHERE id = ?",
+        returnValue: "resultRows",
+        rowMode: "object",
+        bind: [id],
+      },
     });
-  }
+  };
 
-  getBook(
+  getAuthors = async (query: QueryParams): Promise<QueryResult<Author[]>> => {
+    const stmt1: MsgType<ExecResultType> = await this.#promiser({
+      type: "exec",
+      dbId: this.#dbId,
+      args: {
+        sql: "SELECT count(id) FROM authors",
+        returnValue: "resultRows",
+        rowMode: "object",
+      },
+    });
+    const stmt1Result: ExecResultType = stmt1.result;
+    const total = Math.ceil(
+      Number(
+        (stmt1Result.resultRows[0] as Record<string, string>)["count(id)"],
+      ) / query.size!,
+    );
+
+    const stmt2: MsgType<ExecResultType> = await this.#promiser({
+      type: "exec",
+      dbId: this.#dbId,
+      args: {
+        sql: "SELECT id, name FROM authors LIMIT ? OFFSET ?",
+        bind: [query.size!, query.page! * query.size! - query.size!],
+        returnValue: "resultRows",
+        rowMode: "object",
+      },
+    });
+    const authors = stmt2.result.resultRows as Author[];
+    return {
+      detail: authors,
+      page: total,
+      size: query.size!,
+      current_page: query.page!,
+    };
+  };
+
+  getAuthor = async (id: number): Promise<Book[]> => {
+    const stmt: MsgType<ExecResultType> = await this.#promiser({
+      type: "exec",
+      args: {
+        sql: "SELECT * FROM books WHERE author_id = ?",
+        bind: [id],
+        returnValue: "resultRows",
+        rowMode: "object",
+      },
+    });
+
+    const books = stmt.result.resultRows as Book[];
+    return books;
+  };
+
+  getBooks = async (
+    page: number,
+    size: number,
+  ): Promise<QueryResult<Book[]>> => {
+    const stmt1: MsgType<ExecResultType> = await this.#promiser({
+      type: "exec",
+      dbId: this.#dbId,
+      args: {
+        sql: "SELECT count(id) FROM books",
+        returnValue: "resultRows",
+        rowMode: "object",
+      },
+    });
+    const total = Math.ceil(
+      Number(
+        (stmt1.result.resultRows[0] as Record<string, string>)["count(id)"],
+      ) / size,
+    );
+    const stmt: MsgType<ExecResultType> = await this.#promiser({
+      type: "exec",
+      dbId: this.#dbId,
+      args: {
+        sql: `SELECT id, title FROM books LIMIT ? OFFSET ?`,
+        bind: [size, page * size - size],
+        returnValue: "resultRows",
+        rowMode: "object",
+      },
+    });
+
+    const books = stmt.result.resultRows as Book[];
+    return {
+      detail: books,
+      page: total,
+      size: size,
+      current_page: page,
+    };
+  };
+
+  getBook = async (
     id: number,
     page: number,
     size: number,
-  ): Promise<QueryResult<Article[]>> {
-    return new Promise<QueryResult<Article[]>>((resolve) => {
-      const onMessage = (event: {
-        data: { type: string; result: QueryResult<Article[]> };
-      }) => {
-        if (event.data.type === "getBook") {
-          console.log(event.data);
-          resolve(event.data.result);
-        }
-      };
-      worker.onmessage = onMessage;
-      worker.postMessage({
-        type: "getBook",
-        query: { id: id, page: page, size: size },
-      });
-      console.log({
-        type: "getBook",
-        query: { id: id, page: page, size: size },
-      });
+  ): Promise<QueryResult<Article[]>> => {
+    const stmt1: MsgType<ExecResultType> = await this.#promiser({
+      type: "exec",
+      dbId: this.#dbId,
+      args: {
+        sql: "SELECT count(id) FROM chapters WHERE book_id = ?",
+        returnValue: "resultRows",
+        rowMode: "object",
+        bind: [id],
+      },
     });
-  }
+
+    const total = Math.ceil(
+      Number(
+        (stmt1.result.resultRows[0] as Record<string, string>)["count(id)"],
+      ) / size,
+    );
+    const stmt: MsgType<ExecResultType> = await this.#promiser({
+      type: "exec",
+      dbId: this.#dbId,
+      args: {
+        sql: `SELECT ${ArticleColumn} FROM ${ArticleFullJoinTable} WHERE chapters.book_id = ? LIMIT ? OFFSET ?`,
+        bind: [id, size, page * size - size],
+        returnValue: "resultRows",
+        rowMode: "object",
+      },
+    });
+
+    const articles = stmt.result.resultRows as Article[];
+
+    return {
+      detail: articles,
+      page: total,
+      size: size,
+      current_page: page,
+    };
+  };
 }

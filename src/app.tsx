@@ -12,6 +12,7 @@ import BookDetail from "./routes/books/[id]";
 import AuthorList from "./routes/authors";
 import AuthorDetail from "./routes/authors/[id]";
 import Setting from "./routes/setting";
+import Create from "./routes/create";
 
 export default function App() {
   return (
@@ -37,6 +38,7 @@ export default function App() {
         <Route path="/authors" component={AuthorList} />
         <Route path="/authors/:id" component={AuthorDetail} />
         <Route path="/setting" component={Setting} />
+        <Route path="/create" component={Create} />
         <Route path="/" component={Home} />
       </Router>
     </>

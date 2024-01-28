@@ -1,6 +1,6 @@
 import { services } from "../../application/app";
 import { ServiceContext } from "./service";
-import { JSX } from "solid-js";
+import type { JSX } from "solid-js";
 
 export function ServiceProvider(props: { children: JSX.Element }) {
   return (
