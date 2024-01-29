@@ -1,4 +1,3 @@
-import { Title } from "@solidjs/meta";
 import { useService } from "./store/service";
 import { createSignal } from "solid-js";
 import { Box, Button } from "@suid/material";
@@ -39,7 +38,6 @@ export default function Setting() {
 
   return (
     <main>
-      <Title>欢迎</Title>
       <h1>{message()}</h1>
       <Box sx={{ minWidth: 120 }}>
         <input type="file" ref={uploadInputElement} />
