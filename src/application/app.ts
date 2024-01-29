@@ -12,7 +12,9 @@ export const createRepository = <T extends Repository>(
 console.log(process.env.NODE_ENV);
 
 const sqliteRepository = new SqliteRepository();
-
+window.addEventListener("beforeunload", () => {
+  sqliteRepository.close();
+})
 export const articleRepository: ArticleReposirory = createRepository(
   sqliteRepository,
   sqliteRepository,

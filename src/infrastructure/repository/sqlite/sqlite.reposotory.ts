@@ -32,8 +32,7 @@ const promiser: <T>(config: PostMessage) => Promise<MsgType<T>> =
   });
 
 export class SqliteRepository
-  implements ArticleReposirory, AuthorRepository, BookRepository
-{
+  implements ArticleReposirory, AuthorRepository, BookRepository {
   #promiser: <T>(config: PostMessage) => Promise<MsgType<T>>;
   #dbId?: string;
   constructor() {
@@ -55,6 +54,8 @@ export class SqliteRepository
     } catch (e) {
       if (!(e instanceof Error)) {
         const result = (e as ErrType).result;
+        this.close();
+        this.#init({ filename: "library.db" });
         throw new Error(result.message);
       } else {
         throw e;
@@ -64,12 +65,11 @@ export class SqliteRepository
 
   #input = async (context: string): Promise<string> => {
     try {
-      const msg: MsgType<ExecResultType> = await this.#promiser({
+      await this.#promiser({
         type: "exec",
         dbId: this.#dbId,
         args: { sql: context },
       });
-      console.log(msg);
       return "输入成功";
     } catch (e) {
       if (!(e instanceof Error)) {
@@ -81,19 +81,12 @@ export class SqliteRepository
     }
   };
 
-  async setting(config: { op: string; context?: string }): Promise<string> {
-    let result = "";
-    switch (config.op) {
-      case "file":
-        if (config.context) {
-          return this.#input(config.context);
-        }
-        break;
-      default:
-        result = `${config.op}操作失败`;
-        break;
+  async setting(config: {context?: string }): Promise<string> {
+    if (config.context) {
+      return this.#input(config.context);
+    } else {
+      return "缺少文件";
     }
-    return result;
   }
 
   getArticles = async (query: QueryParams): Promise<QueryResult<Article[]>> => {
@@ -350,4 +343,11 @@ export class SqliteRepository
       current_page: page,
     };
   };
+
+  close =async () => {
+    await this.#promiser({
+      type: "close",
+      dbId: this.#dbId
+    })
+  }
 }

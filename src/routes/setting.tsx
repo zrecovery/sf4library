@@ -1,14 +1,12 @@
 import { Title } from "@solidjs/meta";
 import { useService } from "./store/service";
-import { Show, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
 import { Box, Button } from "@suid/material";
-import type { SelectChangeEvent } from "@suid/material/Select";
 
 export default function Setting() {
   let uploadInputElement: HTMLInputElement | undefined;
 
   const [message, setMessage] = createSignal("Hello World!");
-  const [opmode, setOpMode] = createSignal("init");
 
   const services = useService();
 
@@ -25,30 +23,18 @@ export default function Setting() {
     fileRaderResult: string | ArrayBuffer | null,
   ) => {
     const result = services?.setting({
-      context: fileRaderResult as string,
-      op: opmode(),
+      context: fileRaderResult as string
     });
-    console.log(result);
     const message = await result;
     setMessage(result ? ((await result) as string) : typeof message);
   };
 
   const upload = async () => {
     setMessage("Start");
-    if (opmode() === "file") {
-      if (uploadInputElement?.files) {
-        const file = uploadInputElement.files[0];
-        uploadSqlFile(file, handleUploadSqlFile);
-      }
-    } else {
-      if (services) {
-        services.setting({ op: opmode() }).then((result) => setMessage(result));
-      }
+    if (uploadInputElement?.files) {
+      const file = uploadInputElement.files[0];
+      uploadSqlFile(file, handleUploadSqlFile);
     }
-  };
-
-  const handleChange = (event: SelectChangeEvent) => {
-    setOpMode(event.target.value);
   };
 
   return (
@@ -56,15 +42,7 @@ export default function Setting() {
       <Title>欢迎</Title>
       <h1>{message()}</h1>
       <Box sx={{ minWidth: 120 }}>
-        <h1>{opmode()}</h1>
-        <select onChange={handleChange}>
-          <option value="init">初始化</option>
-          <option value="file">上传</option>
-          <option value="finish">生成索引</option>
-        </select>
-        <Show when={opmode() === "file"}>
-          <input type="file" ref={uploadInputElement} />
-        </Show>
+        <input type="file" ref={uploadInputElement} />
         <Button onClick={upload}>提交</Button>
       </Box>
     </main>

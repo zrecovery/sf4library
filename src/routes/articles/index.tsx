@@ -1,10 +1,9 @@
-import { createEffect, createSignal, For, Show } from "solid-js";
+import { createMemo, createSignal, For, Show, type Accessor, createResource } from "solid-js";
 import { ArticleRow } from "~/components/ArticleRow";
 import { Pagination } from "~/components/Pagination";
-import type { Article } from "~/core/articles/article.model";
 import { Button, List, TextField, Switch } from "@suid/material";
-import type { QueryResult } from "~/core/dto/query-result.model";
 import { useService } from "../store/service";
+import type { QueryParams } from "~/core/articles/article.repository";
 
 export default function ArticlesList() {
   const [page, setPage] = createSignal(1);
@@ -13,21 +12,28 @@ export default function ArticlesList() {
   const [searchkeywords, setSearchKeywords] = createSignal("");
   const [love, setLove] = createSignal(false);
 
-  const [data, setData] = createSignal<QueryResult<Article[]>>();
   const services = useService();
 
-  createEffect(async () => {
-    if (searchkeywords() !== "") {
-      const response = await services?.articleService.getArticles({
-        page: currentPage(),
-        size: 4,
-        keywords: searchkeywords(),
-        love: love(),
-      });
-      setData(response);
-      setPage(response?.page ?? 1);
+  const fetchParams: Accessor<QueryParams> = createMemo(() => {
+    return {
+      page: currentPage(),
+      size: 4,
+      keywords: searchkeywords(),
+      love: love(),
     }
-  });
+  })
+
+  const fetchData = async (params: QueryParams) => {
+    if (!services) {
+      throw new Error("Service not found");
+    }
+
+    const result = await services?.articleService.getArticles(params);
+    setPage(result?.page ?? 1);
+    return result;
+
+  }
+  const [data] = createResource(fetchParams, fetchData)
 
   return (
     <>
@@ -41,8 +47,8 @@ export default function ArticlesList() {
           <Switch checked={love()} onChange={(_, value) => setLove(value)} />
           <Button onClick={() => setSearchKeywords(keywords())}>搜索</Button>
         </div>
-        <Show when={keywords() !== ""}>
-          <Show when={data()} fallback={<div>Loading...</div>}>
+        <Show when={searchkeywords() !== ""}>
+          <Show when={!data.loading} fallback={<div>Loading...</div>}>
             <div class="grid-row-start-2 grid-row-end-8">
               <List>
                 <For each={data()?.detail}>
